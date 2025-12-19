@@ -1,0 +1,162 @@
+CREATE TABLE users (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(150) NOT NULL UNIQUE,
+    phone VARCHAR(20) UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    gender ENUM("male","female","other") NULL,
+    is_verified TINYINT(1) DEFAULT 0,
+    role TINYINT UNSIGNED NOT NULL DEFAULT 0,
+    user_status TINYINT UNSIGNED NOT NULL DEFAULT 1 COMMENT '0-inactive,1-active',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+CREATE TABLE email_verification (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT UNSIGNED NOT NULL,
+    token VARCHAR(255) NOT NULL,
+    expires_at DATETIME NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    UNIQUE(token),
+    INDEX(user_id),
+    CONSTRAINT fk_ev_user FOREIGN KEY (user_id)
+        REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+CREATE TABLE categories (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    description TEXT,
+    cat_status TINYINT UNSIGNED NOT NULL DEFAULT 1 COMMENT '0-inactive,1-active',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+CREATE TABLE subcategories (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    category_id BIGINT UNSIGNED NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    UNIQUE(category_id, name),
+    INDEX(category_id),
+    CONSTRAINT fk_subcat_category FOREIGN KEY (category_id)
+        REFERENCES categories(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE services (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    provider_id BIGINT UNSIGNED NOT NULL,
+    category_id BIGINT UNSIGNED NOT NULL,
+    subcategory_id BIGINT UNSIGNED NOT NULL,
+    name VARCHAR(150) NOT NULL,
+    duration INT NOT NULL COMMENT 'Duration in minutes',
+    price DECIMAL(10,2) NOT NULL,
+    description TEXT,
+    service_status TINYINT UNSIGNED NOT NULL DEFAULT 1 COMMENT '0-inactive,1-active', 
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    INDEX(provider_id),
+    INDEX(category_id),
+    INDEX(subcategory_id),
+
+    CONSTRAINT fk_service_provider FOREIGN KEY (provider_id)
+        REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_service_category FOREIGN KEY (category_id)
+        REFERENCES categories(id),
+    CONSTRAINT fk_service_subcategory FOREIGN KEY (subcategory_id)
+        REFERENCES subcategories(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+CREATE TABLE provider_availability (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    provider_id BIGINT UNSIGNED NOT NULL,
+    start_time DATETIME NOT NULL,
+    end_time DATETIME NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    INDEX(provider_id),
+    CONSTRAINT fk_availability_provider FOREIGN KEY (provider_id)
+        REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+CREATE TABLE bookings (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT UNSIGNED NOT NULL,
+    provider_id BIGINT UNSIGNED NOT NULL,
+    start_time DATETIME NOT NULL,
+    end_time DATETIME NOT NULL,
+    status TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '0-pending,1-confirmed,2-completed,3-cancelled',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    INDEX(user_id),
+    INDEX(provider_id),
+    INDEX(start_time),
+
+    CONSTRAINT fk_booking_user FOREIGN KEY (user_id)
+        REFERENCES users(id),
+    CONSTRAINT fk_booking_provider FOREIGN KEY (provider_id)
+        REFERENCES users(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+CREATE TABLE payments (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    booking_id BIGINT UNSIGNED NOT NULL,
+    amount DECIMAL(10,2) NOT NULL,
+    status TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '0-pending,1-success,2-failure',
+    transaction_ref VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    UNIQUE(transaction_ref),
+    INDEX(booking_id),
+
+    CONSTRAINT fk_payment_booking FOREIGN KEY (booking_id)
+        REFERENCES bookings(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+CREATE TABLE carts (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT UNSIGNED NOT NULL,
+    total_amount DECIMAL(10,2) DEFAULT 0.00,
+    status TINYINT(1) DEFAULT 0 COMMENT '0-active,1-checked_out',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    INDEX(user_id),
+    CONSTRAINT fk_cart_user FOREIGN KEY (user_id)
+        REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+CREATE TABLE cart_items (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    cart_id BIGINT UNSIGNED NOT NULL,
+    service_id BIGINT UNSIGNED NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    quantity INT DEFAULT 1,
+    subtotal DECIMAL(10,2) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    UNIQUE(cart_id, service_id),
+    INDEX(cart_id),
+    INDEX(service_id),
+
+    CONSTRAINT fk_cart_item_cart FOREIGN KEY (cart_id)
+        REFERENCES carts(id) ON DELETE CASCADE,
+    CONSTRAINT fk_cart_item_service FOREIGN KEY (service_id)
+        REFERENCES services(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+CREATE TABLE logs (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT UNSIGNED NULL,
+    type VARCHAR(50) NOT NULL,
+    action VARCHAR(100) NOT NULL,
+    message TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    INDEX(user_id),
+    CONSTRAINT fk_log_user FOREIGN KEY (user_id)
+        REFERENCES users(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
