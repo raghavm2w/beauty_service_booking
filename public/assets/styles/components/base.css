@@ -10,3 +10,16 @@
   --border: #e5e7eb;
   --bg: #f9fafb;
 }
+.message {
+    margin-top: 10px;
+    padding: 10px;
+    display: none;
+}
+.message.success {
+    background: #e6fffa;
+    color: #065f46;
+}
+.message.error {
+    background: #fee2e2;
+    color: #991b1b;
+}

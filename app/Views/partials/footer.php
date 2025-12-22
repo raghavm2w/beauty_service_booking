@@ -38,6 +38,9 @@
     © 2025 Urban Company. All rights reserved.
   </p>
 </footer>
+<script src="/assets/scripts/base.js"></script>
 <script src="/assets/scripts/register.js"></script>
+<script src="/assets/scripts/login.js"></script>
+
 </body>
 </html>

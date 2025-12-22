@@ -20,9 +20,6 @@ function jsonResponse(
     exit;
 }
 
-/**
- * Shortcut helpers
- */
 function success(
         int $code = 200,
     string $message = '',

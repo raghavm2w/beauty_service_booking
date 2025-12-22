@@ -1,5 +1,5 @@
 <?php include "partials/header.php"; ?>
-
+  <div id="messageBox" class="message"></div>
 <main class="auth-page">
   <h1>Create an account</h1>
 
@@ -7,21 +7,18 @@
     <form id="registerForm">
 
       <div class="form-group">
-        <label>Full Name</label>
-        <input id="reg-name" type="text" name="name" required>
+        <input id="reg-name" type="text" name="name" placeholder="Your name" required>
             <small class="error"></small>
 
       </div>
 
       <div class="form-group">
-        <label>Email address</label>
-        <input id="reg-email" type="email" name="email" required>
+        <input id="reg-email" type="email" name="email" placeholder="email-id" required>
             <small class="error"></small>
 
       </div>
 
       <div class="form-group">
-        <label>Phone Number</label>
         <div class="phone-input">
           <span class="country-code">+91</span>
           <input id="phone" type="number" name="phone" placeholder="mobile number" required>
@@ -34,9 +31,10 @@
         <div class="form-group">
           <label>Gender</label>
           <select id="gender"name="gender">
-            <option>Select gender</option>
-            <option>Male</option>
-            <option>Female</option>
+            <option>male</option>
+            <option>female</option>
+            <option>others</option>
+
           </select>
               <small class="error"></small>
 
@@ -54,15 +52,13 @@
       </div>
 
       <div class="form-group">
-        <label>Password</label>
-        <input type="password" name="password" id="reg-pass" required>
+        <input type="password" name="password" id="reg-pass" placeholder="password" required>
             <small class="error"></small>
 
       </div>
 
       <div class="form-group">
-        <label>Confirm Password</label>
-        <input type="password" name="confirm_password" id="confirm_pass" required>
+        <input type="password" name="confirm_password" id="confirm_pass" placeholder="confirm password" required>
             <small class="error"></small>
 
       </div>
@@ -74,6 +70,7 @@
     </form>
     
   </div>
+
 </main>
 
 <?php include "partials/footer.php"; ?>

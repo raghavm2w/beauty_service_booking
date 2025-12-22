@@ -1,0 +1,18 @@
+<?php
+namespace App\Controllers;
+use App\Core\Controller;
+
+class ViewController extends Controller {
+    public function home() {
+        return $this->view('home');
+    }
+     public function showRegister(){
+        return view("register");
+    }
+    public function showLogin(){
+        return view("login");
+    }
+    public function adminDashboard(){
+        return view("admin.dash");
+    }
+}
