@@ -16,7 +16,8 @@
 
     <nav class="header-actions">
       <a href="/login" class="header-link">Login</a>
-      <!-- <button class="icon-btn"></button> -->
+      <a href="#" class="header-link" onclick="logout()">Log out</a>
+
     </nav>
   </div>
 </header>

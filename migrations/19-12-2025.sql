@@ -6,7 +6,7 @@ CREATE TABLE users (
     password VARCHAR(255) NOT NULL,
     gender ENUM("male","female","other") NULL,
     is_verified TINYINT(1) DEFAULT 0,
-    role TINYINT UNSIGNED NOT NULL DEFAULT 0,
+    role TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '0-customer,1-Service provider,2-admin',
     user_status TINYINT UNSIGNED NOT NULL DEFAULT 1 COMMENT '0-inactive,1-active',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
