@@ -53,7 +53,7 @@ class JwtHelper
         );
     }
 
-    public static function getBearerToken(): ?string
+    public static function getBearerToken()
     {
         $headers = getallheaders();
 

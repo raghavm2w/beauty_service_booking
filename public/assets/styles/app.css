@@ -3,4 +3,7 @@
 @import "./components/header.css";
 @import "./components/form.css";
 @import "./pages/auth.css";
+@import "./components/sidebar.css";
+@import "./pages/services.css";
+
 
