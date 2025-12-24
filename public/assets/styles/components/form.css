@@ -26,3 +26,9 @@ input, select {
   border-radius: 6px;
   cursor: pointer;
 }
+.form-actions{
+  padding:10px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}

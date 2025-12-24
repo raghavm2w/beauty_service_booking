@@ -18,47 +18,53 @@ $this->routes['POST'][$this->normalizePath($path)] = $handler;
 
     public function dispatch(): void
     {
-        $method = $_SERVER['REQUEST_METHOD'];
+         $httpMethod = $_SERVER['REQUEST_METHOD'];
+    $uri = strtok($_SERVER['REQUEST_URI'], '?');
+    $uri = $this->normalizePath($uri);
 
-        // Remove query string
-        $uri = strtok($_SERVER['REQUEST_URI'], '?');
+    if (!isset($this->routes[$httpMethod][$uri])) {
+        http_response_code(404);
+        require_once __DIR__ . "/../Views/404.php";
+        return;
+    }
 
-        // Normalize URI
-        $uri = $this->normalizePath($uri);
+    $handlers = $this->routes[$httpMethod][$uri];
 
-        if (!isset($this->routes[$method][$uri])) {
-            http_response_code(404);
-            require_once __DIR__."/../Views/404.php";
-            return;
-        }
+    if (!is_array($handlers) || isset($handlers[0]) && !is_array($handlers[0])) {
+        $handlers = [$handlers];
+    }
 
-        $handler = $this->routes[$method][$uri];
+    foreach ($handlers as $handler) {
 
-        // Controller + method
         if (is_array($handler)) {
             [$class, $method] = $handler;
 
             if (!class_exists($class)) {
-                throw new \Exception("Controller {$class} not found");
+                throw new \Exception("Class {$class} not found");
             }
 
-            $controller = new $class;
+            $instance = new $class;
 
-            if (!method_exists($controller, $method)) {
+            if (!method_exists($instance, $method)) {
                 throw new \Exception("Method {$method} not found in {$class}");
             }
 
-            $controller->$method();
-            return;
+            $instance->$method();
+            continue;
         }
 
-        // Closure / callable
-        call_user_func($handler);
-    }
+        // Closure
+        if (is_callable($handler)) {
+            call_user_func($handler);
+            continue;
+        }
 
-    private function normalizePath(string $path): string
-    {
-        $path = '/' . trim($path, '/');
-        return $path === '/' ? '/' : rtrim($path, '/');
+        throw new \Exception("Invalid route handler");
     }
+}
+private function normalizePath(string $path)
+{
+     $path = '/' . trim($path, '/'); 
+     return $path === '/' ? '/' : rtrim($path, '/'); 
+}
 }
