@@ -1,3 +1,128 @@
+function initServices() {
+const tableBody = document.getElementById("serviceTableBody");
+const searchInput = document.getElementById("searchServices");
+const prevBtn = document.getElementById("servicePrevBtn");
+const nextBtn = document.getElementById("serviceNextBtn");
+const paginationInfo = document.getElementById("paginationInfo");
+const headers = document.querySelectorAll("th[data-sort]");
+const totalCountElem = document.getElementById("total-count");
+const activeCountElem = document.getElementById("active-count");
+
+let currentPage = 1;
+let limit = 4;
+let totalRows = 0;
+let searchQuery = "";
+let sortBy = "name";
+let sortOrder = "asc";
+
+/* ------ FETCH SERVICES ------ */
+ function fetchServices() {
+    const params = new URLSearchParams({
+        page: currentPage,
+        limit,
+        search: searchQuery,
+        sort: sortBy,
+        order: sortOrder
+    });
+    fetch(`/admin/services-list?${params}`)
+    .then(res => res.json())
+    .then(data => {
+        totalCountElem.textContent = data.data.overallTotal;
+        activeCountElem.textContent = data.data.activeTotal;
+        totalRows = data.data.totalRows;
+        renderTable(data.data.services);
+        renderPagination();
+    })
+    .catch(err => {
+        console.error("Error fetching services:", err);
+        showAlert("Failed to load services", "error");
+    });
+}
+function renderTable(services) {
+    tableBody.innerHTML = "";
+
+    if (services.length === 0) {
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="6" style="text-align:center">No services found</td>
+            </tr>`;
+        return;
+    }
+
+    services.forEach(service => {
+        tableBody.innerHTML += `
+            <tr>
+                <td>${service.name}</td>
+                <td>₹${service.price}</td>
+                <td>${service.duration} min</td>
+                <td>${service.description?service.description:"-"}</td>
+                <td>
+                    <span class="badge ${service.service_status === 1 ? 'active' : 'inactive'}">
+                        ${service.service_status === 1 ? 'active' : 'inactive'}
+                    </span>
+                </td>
+                <td>
+                    <button class="action-btn" onclick="editService(${service.id})"><i class="fa-solid fa-pen"></i></button>
+                    <button class="action-btn" onclick="deleteService(${service.id})"><i class="fa-solid fa-trash"></i></button>
+                </td>
+            </tr>
+        `;
+    });
+}
+function renderPagination() {
+    const start = (currentPage - 1) * limit + 1;
+    const end = Math.min(currentPage * limit, totalRows);
+
+    paginationInfo.textContent = `Showing ${start}-${end} of ${totalRows} services`;
+
+    prevBtn.disabled = currentPage === 1;
+    nextBtn.disabled = currentPage * limit >= totalRows;
+}
+
+prevBtn.addEventListener("click", () => {
+    if (currentPage > 1) {
+        currentPage--;
+        fetchServices();
+    }
+
+});
+
+nextBtn.addEventListener("click", () => {
+    if (currentPage * limit < totalRows) {
+        currentPage++;
+        fetchServices();
+    }
+});
+let debounceTimer;
+searchInput.addEventListener("input", () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+        searchQuery = searchInput.value.trim();
+        currentPage = 1;
+        fetchServices();
+    }, 400);
+});
+
+/* ---------------- SORTING ---------------- */
+headers.forEach(header => {
+    header.addEventListener("click", () => {
+        const column = header.dataset.sort;
+
+        if (sortBy === column) {
+            sortOrder = sortOrder === "asc" ? "desc" : "asc";
+        } else {
+            sortBy = column;
+            sortOrder = "asc";
+        }
+
+        currentPage = 1;
+        fetchServices();
+    });
+});
+fetchServices();
+
+
+
 document.addEventListener('submit', (e) => {
         if (!e.target.matches("#addServiceForm")) return;
     e.preventDefault();
@@ -23,19 +148,19 @@ const addForm = document.getElementById('addServiceForm');
     .then(data => {
         if (data.status === "error") {
             // showMessage(data.message, "error");
-            alert(data.message);
+            showAlert(data.message,"error");
                     addForm.reset();
 
             return;
         }
         // showMessage(data.message, "success");
-        alert(data.message);
+        showAlert(data.message,"success");
         addForm.reset();
         closeServiceForm();
     })
     .catch(err => {
         console.error("Fetch error:", err);
-        showMessage("An error occurred while adding service", "error");
+        showAlert("An error occurred while adding service", "error");
     });
 });
 function openServiceForm() {
@@ -95,3 +220,4 @@ document.addEventListener('change', async function (e) {
     subcategorySelect.disabled = false;
 });
 
+}

@@ -68,4 +68,30 @@ public function fetchSubcategories(){
         error(500,"An error occurred while fetching subcategories");
 }
 }
+public function fetchServices(){
+    try{
+        $search = trim($_GET['search'] ?? '');
+        $page   = max(1, (int)($_GET['page'] ?? 1));
+        $limit  = max(1, (int)($_GET['limit'] ?? 4));
+        $offset = ($page - 1) * $limit;
+        $sort = $_GET['sort'] ?? 'name';
+         $order = strtolower($_GET['order'] ?? 'asc');
+         $order = $order === 'desc' ? 'DESC' : 'ASC';
+        $provider_id = $_REQUEST['auth_user']['id'];
+        $overallTotal = $this->service->countTotalServices($provider_id);
+        $activeTotal = $this->service->countActiveServices($provider_id);
+        $totalServices = $this->service->countServices($provider_id, $search);
+        $services = $this->service->getAllServices($provider_id, $search, $limit, $offset, $sort, $order);
+        success(200,"services fetched successfully",[
+            'totalRows'=>$totalServices,
+            'services'=>$services,
+            'overallTotal'=>$overallTotal,
+            'activeTotal'=>$activeTotal
+        ]);
+    }
+catch(\Exception $e){
+    error_log("Fetch services error: ".$e->getMessage());
+        error(500,"An error occurred while fetching services");
+}
+}
 }

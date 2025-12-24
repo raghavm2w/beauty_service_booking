@@ -16,6 +16,7 @@ $router->get('/admin/services', [[AuthMiddleware::class,'verify'],[AuthMiddlewar
 $router->get('/admin/dash', [[AuthMiddleware::class,'verify'],[AuthMiddleware::class,'providerOnly'],[ViewController::class, 'adminDash']]);
 $router->get('/admin/categories', [ServiceController::class, 'fetchCategories']);
 $router->get('/admin/subcategories', [ServiceController::class, 'fetchSubcategories']);
+$router->get('/admin/services-list', [[AuthMiddleware::class,'verify'],[AuthMiddleware::class,'providerOnly'],[ServiceController::class, 'fetchServices']]);
 
 
 

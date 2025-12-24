@@ -81,3 +81,13 @@ color: #fff;
     color: #777;
     margin-bottom: 15px;
 }
+.action-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    margin-right: 8px;
+}
+.action-btn :hover {
+    color: #2563eb;
+}

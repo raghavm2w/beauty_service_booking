@@ -26,7 +26,7 @@ function loadPage(page){
                 return;
             }
 
-            showMessage(data.message || 'Access denied', 'error');
+            showAlert(data.message || 'Access denied', 'error');
             return;
         }
 
@@ -36,11 +36,14 @@ function loadPage(page){
         if (!html) return;
 
         document.getElementById('content').innerHTML = html;
+        if(page === '/admin/services'){
+            initServices();
+        }
         // history.pushState({}, '', page);
     })
     .catch(err => {
         console.error(err);
-        showMessage('Failed to load page', 'error');
+        showAlert('Failed to load page', 'error');
     });
 }
 function logout(){
@@ -52,7 +55,7 @@ fetch('/logout',{
    .then(res => res.json())
   .then(data => {
        if (data.status === "error") {
-        alert("Logout error");
+        showAlert("Logout error","error");
         //    showMessage(data.message, "error");
         console.log("Logout error");
            return;
@@ -63,6 +66,16 @@ fetch('/logout',{
    
         }) .catch(err => {
         console.error("logout error:", err);
-        showMessage("An error occurred while logout", "error");
+        showAlert("An error occurred while logout", "error");
     });
 }
+ function showAlert(message, type) {
+    const alertBox = document.getElementById("custom-alert");
+    alertBox.innerHTML = message;
+    alertBox.className = "alert-box alert-" + type;
+    alertBox.style.display = "block";
+
+    setTimeout(() => {
+        alertBox.style.display = "none";
+    }, 3500);
+}   

@@ -54,7 +54,7 @@ CREATE TABLE services (
     duration INT NOT NULL COMMENT 'Duration in minutes',
     price DECIMAL(10,2) NOT NULL,
     description TEXT,
-    service_status TINYINT UNSIGNED NOT NULL DEFAULT 1 COMMENT '0-inactive,1-active', 
+    service_status TINYINT UNSIGNED NOT NULL DEFAULT 1 COMMENT '0-inactive,1-active,2-isdeleted', 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
@@ -69,18 +69,20 @@ CREATE TABLE services (
     CONSTRAINT fk_service_subcategory FOREIGN KEY (subcategory_id)
         REFERENCES subcategories(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-CREATE TABLE provider_availability (
+
+CREATE TABLE service_availability (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    provider_id BIGINT UNSIGNED NOT NULL,
+    service_id BIGINT UNSIGNED NOT NULL,
     start_time DATETIME NOT NULL,
     end_time DATETIME NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     INDEX(provider_id),
-    CONSTRAINT fk_availability_provider FOREIGN KEY (provider_id)
-        REFERENCES users(id) ON DELETE CASCADE
+    CONSTRAINT fk_availability_service FOREIGN KEY (service_id)
+        REFERENCES service(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE bookings (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT UNSIGNED NOT NULL,

@@ -34,22 +34,18 @@
         <div class="stats">
             <div class="card">
                 <span>Total Services</span>
-                <h2>12</h2>
+                <h2 id="total-count"></h2>
             </div>
             <div class="card">
                 <span>Active Services</span>
-                <h2>10</h2>
+                <h2 id="active-count"></h2>
             </div>
-            <div class="card">
-                <span>Most Popular</span>
-                <h2>Deep Tissue</h2>
-            </div>
+    
         </div>
 
         <!-- Search -->
         <div class="table-header">
-            <input type="text" placeholder="Search services...">
-            <button class="btn-secondary">Filter</button>
+            <input type="text" id="searchServices" placeholder="Search services...">
         </div>
 
         <!-- Table -->
@@ -57,70 +53,25 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Service Name</th>
+                         <th data-sort="name">Service Name <i class="fa-solid fa-sort"></i></th>
+                <th data-sort="price">Price <i class="fa-solid fa-sort"></i></th>
+                <th data-sort="duration">Duration <i class="fa-solid fa-sort"></i></th>
                         <th>Description</th>
-                        <th>Price</th>
-                        <th>Duration</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>
-                            <strong>Deep Tissue Massage</strong>
-                            <small>Therapeutic</small>
-                        </td>
-                        <td>Focuses on realigning deeper layers of muscles.</td>
-                        <td>$120.00</td>
-                        <td>60 min</td>
-                        <td><span class="badge active">Active</span></td>
-                        <td>✏️ 🗑️</td>
-                    </tr>
-
-                    <tr>
-                        <td>
-                            <strong>Swedish Massage</strong>
-                            <small>Relaxation</small>
-                        </td>
-                        <td>Gentle massage to relax the entire body.</td>
-                        <td>$100.00</td>
-                        <td>60 min</td>
-                        <td><span class="badge active">Active</span></td>
-                        <td>✏️ 🗑️</td>
-                    </tr>
-
-                    <tr>
-                        <td>
-                            <strong>Hot Stone Therapy</strong>
-                            <small>Specialty</small>
-                        </td>
-                        <td>Heated stones placed on specific areas.</td>
-                        <td>$150.00</td>
-                        <td>90 min</td>
-                        <td><span class="badge inactive">Inactive</span></td>
-                        <td>✏️ 🗑️</td>
-                    </tr>
-
-                    <tr>
-                        <td>
-                            <strong>Standard Facial</strong>
-                            <small>Skincare</small>
-                        </td>
-                        <td>Cleansing, exfoliating, nourishing skin.</td>
-                        <td>$80.00</td>
-                        <td>45 min</td>
-                        <td><span class="badge active">Active</span></td>
-                        <td>✏️ 🗑️</td>
-                    </tr>
+                <tbody id="serviceTableBody">
+                   
+            
                 </tbody>
             </table>
 
             <div class="pagination">
-                Showing 1–4 of 12 services
+            <span id="paginationInfo"></span>
                 <div>
-                    <button>Previous</button>
-                    <button class="active">Next</button>
+                    <button id="servicePrevBtn" >Previous</button>
+                    <button class="active" id="serviceNextBtn" >Next</button>
                 </div>
             </div>
         </div>
