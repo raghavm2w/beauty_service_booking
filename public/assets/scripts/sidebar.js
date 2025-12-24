@@ -37,7 +37,11 @@ function loadPage(page){
 
         document.getElementById('content').innerHTML = html;
         if(page === '/admin/services'){
-            initServices();
+            
+        const script = document.createElement("script");
+        script.src = "/assets/scripts/services.js";
+        script.defer = true;
+        document.body.appendChild(script);
         }
         // history.pushState({}, '', page);
     })

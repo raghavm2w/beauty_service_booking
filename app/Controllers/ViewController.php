@@ -21,4 +21,7 @@ class ViewController extends Controller {
      public function adminDash(){
         return view("admin.dash");
     }
+    public function adminAvail(){
+        return view("admin.avail");
+    }
 }

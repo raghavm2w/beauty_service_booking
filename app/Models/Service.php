@@ -69,11 +69,30 @@ class Service extends Model{
             $sort = 'name';
         }
 
-        $sql = "
-        SELECT id, name, price, duration, description, service_status
-        FROM services
-        WHERE provider_id = :provider_id AND name LIKE :search AND service_status != 2
-        ORDER BY $sort $order
+        $sql = "SELECT
+            s.id,
+            s.provider_id,
+            s.category_id,
+            s.subcategory_id,
+            s.name,
+            s.duration,
+            s.price,
+            s.description,
+            s.service_status,
+            s.created_at,
+            s.updated_at,
+            c.name  AS category_name,
+            sc.name AS subcategory_name
+        FROM services s
+        LEFT JOIN categories c 
+            ON s.category_id = c.id
+        LEFT JOIN subcategories sc 
+            ON s.subcategory_id = sc.id
+
+        WHERE s.provider_id = :provider_id
+          AND s.name LIKE :search
+          AND s.service_status != 2
+        ORDER BY s.$sort $order
         LIMIT :limit OFFSET :offset
         ";
 
@@ -88,7 +107,7 @@ class Service extends Model{
     }
     public function countTotalServices($provider_id){
         $stmt = $this->db->prepare(
-            "SELECT COUNT(*) as total FROM services WHERE provider_id = :provider_id"
+            "SELECT COUNT(*) as total FROM services WHERE provider_id = :provider_id AND service_status != 2"
         );
         $stmt->execute(['provider_id' => $provider_id]);
 
@@ -103,4 +122,41 @@ class Service extends Model{
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result ? (int)$result['total'] : 0; 
     }
+    public function editService($serviceId, $provider_id, $name, $category_id, $subcategory_id, $price, $duration, $description,$service_status){
+        $sql = "
+    UPDATE services
+    SET name = :name,
+        category_id = :category_id,
+        subcategory_id = :subcategory_id,
+        price = :price,
+        duration = :duration,
+        description = :description,
+        service_status = :service_status
+    WHERE id = :service_id AND provider_id = :provider_id
+    ";
+    $stmt = $this->db->prepare($sql);
+    return $stmt->execute([
+        ':name'           => $name,
+        ':category_id'    => $category_id,
+        ':subcategory_id' => $subcategory_id,
+        ':price'          => $price,
+        ':duration'       => $duration,
+        ':description'    => $description,
+        ':service_id'     => $serviceId,
+        ':provider_id'    => $provider_id,
+        ':service_status' => $service_status
+    ]);
+}
+function deleteService($serviceId, $provider_id){
+    $sql = "
+    UPDATE services
+    SET service_status = 2
+    WHERE id = :service_id AND provider_id = :provider_id
+    ";
+    $stmt = $this->db->prepare($sql);
+    return $stmt->execute([
+        ':service_id'  => $serviceId,
+        ':provider_id' => $provider_id
+    ]);
+} 
 }

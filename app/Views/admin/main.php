@@ -8,7 +8,6 @@
     <div id="custom-alert" class="alert-box"></div>
 
     <script src="/assets/scripts/sidebar.js"></script>
-            <script src="/assets/scripts/services.js"></script>
 
 
 </body>

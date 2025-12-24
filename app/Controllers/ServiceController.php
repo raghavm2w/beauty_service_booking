@@ -89,9 +89,72 @@ public function fetchServices(){
             'activeTotal'=>$activeTotal
         ]);
     }
-catch(\Exception $e){
+    catch(\Exception $e){
     error_log("Fetch services error: ".$e->getMessage());
         error(500,"An error occurred while fetching services");
+    }
 }
+public function editService(){
+    try{
+    $input = json_decode(file_get_contents("php://input"), true);
+  if (empty($input['id']) || empty($input['name'])  || empty($input['price']) || empty($input['duration']) 
+    ||empty($input['category_id']) || empty($input['subcategory_id']) || !isset($input['service_status']) )
+        {
+            error(400,"All fields are required");
+        }
+    $service_id = (int) $input['id'];
+    $provider_id = $_REQUEST['auth_user']['id'];
+    $name = trim($input['name']);
+    $price = trim($input['price']);
+    $duration = (int) $input['duration'];
+    $description = trim($input['description'] ?? null);
+    $category_id = (int) $input['category_id'];
+    $subcategory_id = (int) $input['subcategory_id'];
+    $service_status = (int) $input['service_status'];
+
+    
+
+        if (strlen($name) < 3) {
+            error(400,"Service name must be at least 3 characters.");
+        }
+         if (!is_numeric($price) || $price <= 0) {
+            error(400,"Enter a valid price value");
+        }
+        if (!is_numeric($duration) || $duration <= 0) {
+             error(400,"Enter a valid time duation minutes");
+
+        }
+        if (!in_array($service_status, [0, 1])) {
+            error(400, "Invalid service status.");
+        }
+       
+        $result = $this->service->editService($service_id,$provider_id, $name, $category_id, $subcategory_id, $price, $duration, $description, $service_status);
+        if(!$result){
+            error(500,"An error occurred while updating the service");
+        }
+        success(200,"Service updated successfully");
+    }catch(\Exception $e){
+        error_log("Edit service error: ".$e->getMessage());
+        error(500,"An error occurred while updating the service");
+    }
+}
+function deleteService(){
+    try{
+    $input = json_decode(file_get_contents("php://input"), true);
+  if (empty($input['id']) )
+        {
+            error(400,"Service ID is required");
+        }
+    $service_id = (int) $input['id'];
+    $provider_id = $_REQUEST['auth_user']['id'];
+        $result = $this->service->deleteService($service_id,$provider_id);
+        if(!$result){
+            error(500,"An error occurred while deleting the service");
+        }
+        success(200,"Service deleted successfully");
+    }catch(\Exception $e){
+        error_log("Delete service error: ".$e->getMessage());
+        error(500,"An error occurred while deleting the service");
+    }
 }
 }
