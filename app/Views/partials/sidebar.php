@@ -4,8 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <title>admin</title>
+      <link rel="stylesheet" href="/assets/styles/app.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="/assets/styles/app.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.css"/> -->
 </head>
 <body>
 

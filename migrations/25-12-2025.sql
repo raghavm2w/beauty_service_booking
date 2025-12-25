@@ -15,3 +15,4 @@ CREATE TABLE provider_availability (
         FOREIGN KEY (provider_id) REFERENCES users(id)
         ON DELETE CASCADE
 );
+ALTER TABLE provider_availability ADD CONSTRAINT uniq_provider_day_recurring UNIQUE (provider_id, day_of_week, is_recurring);

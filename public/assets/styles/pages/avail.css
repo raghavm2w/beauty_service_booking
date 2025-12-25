@@ -1,0 +1,68 @@
+.availability-container {
+  max-width: 1000px;
+  margin: auto;
+}
+
+.quick-setup {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+    background: #fff;
+    padding:20px;
+
+}
+.quick-setup input{
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    width:fit-content;
+}
+.calendar-title{
+    display:flex;
+    align-items: center;
+    gap:10px;
+
+}
+.calendar-title h3{
+    width:fit-content;
+    padding:4px;
+}
+.quick-setup button{
+    padding: 8px 15px;
+    border-radius: 6px;
+    border: none;
+    background: #2563eb;
+    color: #fff;
+    cursor: pointer;
+}
+
+#calendar {
+  background: #fff;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.avail-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.4);
+  align-items: center;
+  justify-content: center;
+  z-index:999;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 20px;
+  width: 300px;
+  border-radius: 8px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+}
