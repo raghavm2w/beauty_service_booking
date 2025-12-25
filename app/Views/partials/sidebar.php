@@ -23,7 +23,7 @@
         <nav class="menu">
             <a data-page="/admin/dash" class="active" onclick="toggleActive(event,this)">Dashboard</a>
             <a data-page="/admin/services" onclick="toggleActive(event,this)">My Services</a>
-            <a href="/admin/avail" onclick="toggleActive(event,this)">Availability</a>
+            <a data-page="/admin/avail" onclick="toggleActive(event,this)">Availability</a>
             <a href="#" onclick="toggleActive(event,this)">Bookings</a>
             <a href="#" onclick="toggleActive(event,this)">Settings</a>
         </nav>
