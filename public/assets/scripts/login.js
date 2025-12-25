@@ -49,7 +49,7 @@ fetch('/login', {
         }
         showMessage(data.message, "success");
                 if(data.data.role === 'provider'){
-            window.location.href = "/admin";
+            window.location.href = "/admin/dash";
             return;
         }else{
         window.location.href = "/";

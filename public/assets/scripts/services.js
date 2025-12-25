@@ -1,6 +1,5 @@
-const tableBody = document.getElementById("serviceTableBody");
-const searchInput = document.getElementById("searchServices");
 const prevBtn = document.getElementById("servicePrevBtn");
+const searchInput = document.getElementById("searchServices");
 const nextBtn = document.getElementById("serviceNextBtn");
 const paginationInfo = document.getElementById("paginationInfo");
 const headers = document.querySelectorAll("th[data-sort]");
@@ -38,6 +37,8 @@ let sortOrder = "asc";
     });
 }
 function renderTable(services) {
+    const tableBody = document.getElementById("serviceTableBody");
+
     tableBody.innerHTML = "";
 
     if (services.length === 0) {

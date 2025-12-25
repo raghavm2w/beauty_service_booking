@@ -1,3 +1,4 @@
+<?php $currentPage = $_SERVER['REQUEST_URI']; ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,11 +22,11 @@
         </div>
 
         <nav class="menu">
-            <a data-page="/admin/dash" class="active" onclick="toggleActive(event,this)">Dashboard</a>
-            <a data-page="/admin/services" onclick="toggleActive(event,this)">My Services</a>
-            <a data-page="/admin/avail" onclick="toggleActive(event,this)">Availability</a>
-            <a href="#" onclick="toggleActive(event,this)">Bookings</a>
-            <a href="#" onclick="toggleActive(event,this)">Settings</a>
+            <a class="<?= str_contains($currentPage, 'dash') ? 'active' : '' ?> " href="/admin/dash"  >Dashboard</a>
+            <a  class="<?= str_contains($currentPage, 'services') ? 'active' : '' ?> " href="/admin/services">My Services</a>
+            <a class="<?= str_contains($currentPage, 'avail') ? 'active' : '' ?> " href="/admin/avail" >Availability</a>
+            <a oclass="<?= str_contains($currentPage, 'bookings') ? 'active' : '' ?> "href="#" >Bookings</a>
+            <a  class="<?= str_contains($currentPage, 'settings') ? 'active' : '' ?> " href="#" >Settings</a>
         </nav>
 
         <div class="logout" >

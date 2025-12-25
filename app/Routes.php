@@ -11,7 +11,7 @@ $router = new Router();
 $router->get('/', [ViewController::class, 'home']);
 $router->get('/register', [ViewController::class, 'showRegister']);
 $router->get('/login', [ViewController::class, 'showLogin']);
-$router->get('/admin', [[AuthMiddleware::class,'verify'],[AuthMiddleware::class,'providerOnly'],[ViewController::class, 'admin']]);
+// $router->get('/admin', [[AuthMiddleware::class,'verify'],[AuthMiddleware::class,'providerOnly'],[ViewController::class, 'admin']]);
 $router->get('/admin/services', [[AuthMiddleware::class,'verify'],[AuthMiddleware::class,'providerOnly'],[ViewController::class, 'adminServices']]);
 $router->get('/admin/dash', [[AuthMiddleware::class,'verify'],[AuthMiddleware::class,'providerOnly'],[ViewController::class, 'adminDash']]);
 $router->get('/admin/avail', [[AuthMiddleware::class,'verify'],[AuthMiddleware::class,'providerOnly'],[ViewController::class, 'adminAvail']]);

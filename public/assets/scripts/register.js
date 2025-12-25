@@ -121,7 +121,7 @@ fetch('/register', {
         showMessage(data.message, "success");
                 form.reset();
         if(data.data.role === 'provider'){
-            window.location.href = "/admin/dashboard";
+            window.location.href = "/admin/dash";
         }else{
         window.location.href = "/";
         }

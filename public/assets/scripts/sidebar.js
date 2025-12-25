@@ -1,55 +1,55 @@
-function toggleActive(e,btn){
-    e.preventDefault(); 
-    const buttons = document.querySelectorAll('.menu a');
-    buttons.forEach(button => {
-        button.classList.remove('active');
-    });
-    btn.classList.add('active');
-     const page = btn.dataset.page; 
-    loadPage(page);
-}
-function loadPage(page){
-    fetch(page, {
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-        },
-        credentials: 'include'
-    })
-    .then(async res => {
-        const type = res.headers.get('content-type');
+// function toggleActive(e,btn){
+//     // e.preventDefault(); 
+//     const buttons = document.querySelectorAll('.menu a');
+//     buttons.forEach(button => {
+//         button.classList.remove('active');
+//     });
+//     btn.classList.add('active');
+//     //  const page = btn.dataset.page; 
+//     // loadPage(page);
+// }
+// function loadPage(page){
+//     fetch(page, {
+//         headers: {
+//             'X-Requested-With': 'XMLHttpRequest'
+//         },
+//         credentials: 'include'
+//     })
+//     .then(async res => {
+//         const type = res.headers.get('content-type');
 
-        if (type && type.includes('application/json')) {
-            const data = await res.json();
+//         if (type && type.includes('application/json')) {
+//             const data = await res.json();
 
-            if (data.redirect) {
-                window.location.href = data.redirect;
-                return;
-            }
+//             if (data.redirect) {
+//                 window.location.href = data.redirect;
+//                 return;
+//             }
 
-            showAlert(data.message || 'Access denied', 'error');
-            return;
-        }
+//             showAlert(data.message || 'Access denied', 'error');
+//             return;
+//         }
 
-        return res.text();
-    })
-    .then(html => {
-        if (!html) return;
+//         return res.text();
+//     })
+//     .then(html => {
+//         if (!html) return;
 
-        document.getElementById('content').innerHTML = html;
-        if(page === '/admin/services'){
+//         document.getElementById('content').innerHTML = html;
+//         // if(page === '/admin/services'){
             
-        const script = document.createElement("script");
-        script.src = "/assets/scripts/services.js";
-        script.defer = true;
-        document.body.appendChild(script);
-        }
-        // history.pushState({}, '', page);
-    })
-    .catch(err => {
-        console.error(err);
-        showAlert('Failed to load page', 'error');
-    });
-}
+//         // const script = document.createElement("script");
+//         // script.src = "/assets/scripts/services.js";
+//         // script.defer = true;
+//         // document.body.appendChild(script);
+//         // }
+//         // history.pushState({}, '', page);
+//     })
+//     .catch(err => {
+//         console.error(err);
+//         showAlert('Failed to load page', 'error');
+//     });
+// }
 function logout(){
     console.log("Logout initiated");
 fetch('/logout',{
