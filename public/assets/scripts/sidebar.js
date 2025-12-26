@@ -1,55 +1,4 @@
-// function toggleActive(e,btn){
-//     // e.preventDefault(); 
-//     const buttons = document.querySelectorAll('.menu a');
-//     buttons.forEach(button => {
-//         button.classList.remove('active');
-//     });
-//     btn.classList.add('active');
-//     //  const page = btn.dataset.page; 
-//     // loadPage(page);
-// }
-// function loadPage(page){
-//     fetch(page, {
-//         headers: {
-//             'X-Requested-With': 'XMLHttpRequest'
-//         },
-//         credentials: 'include'
-//     })
-//     .then(async res => {
-//         const type = res.headers.get('content-type');
 
-//         if (type && type.includes('application/json')) {
-//             const data = await res.json();
-
-//             if (data.redirect) {
-//                 window.location.href = data.redirect;
-//                 return;
-//             }
-
-//             showAlert(data.message || 'Access denied', 'error');
-//             return;
-//         }
-
-//         return res.text();
-//     })
-//     .then(html => {
-//         if (!html) return;
-
-//         document.getElementById('content').innerHTML = html;
-//         // if(page === '/admin/services'){
-            
-//         // const script = document.createElement("script");
-//         // script.src = "/assets/scripts/services.js";
-//         // script.defer = true;
-//         // document.body.appendChild(script);
-//         // }
-//         // history.pushState({}, '', page);
-//     })
-//     .catch(err => {
-//         console.error(err);
-//         showAlert('Failed to load page', 'error');
-//     });
-// }
 function logout(){
     console.log("Logout initiated");
 fetch('/logout',{
@@ -83,3 +32,46 @@ fetch('/logout',{
         alertBox.style.display = "none";
     }, 3500);
 }   
+ function toggleSettings() {
+        const settingsDiv = document.querySelector('.settings');
+        if (settingsDiv.style.display === 'block') {
+            settingsDiv.style.display = 'none';
+        } else {
+            settingsDiv.style.display = 'block';
+        }
+    }
+    function openTime(){
+        document.getElementById("timeOverlay").style.display = "block";
+        const  timeModal = document.getElementById("timeModal");        
+            timeModal.style.display = 'block';
+        
+    }
+    function closeTimeForm(){
+                document.getElementById("timeOverlay").style.display = "none";
+          const  timeModal = document.getElementById("timeModal");
+                timeModal.style.display = 'none';
+
+    }
+    document.getElementById("timezoneForm").addEventListener("submit", async e => {
+  e.preventDefault();
+
+  const timezone = document.getElementById("timezone").value;
+
+  const res = await fetch("/admin/set-timezone", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ timezone })
+  });
+
+  const data = await res.json();
+
+  if (data.status === "success") {
+    showAlert("Timezone updated successfully");
+    closeTimeForm();
+    // location.reload(); 
+  } else {
+    alert(data.message || "Failed to update timezone");
+  }
+});
+
+    

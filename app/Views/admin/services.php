@@ -21,9 +21,9 @@
     <select name="subcategory_id" id="subcategory">
     </select>
 
-    <input type="number" name="duration" placeholder="Duration (minutes)" required>
+    <input type="number" name="duration" min="1"placeholder="Duration (minutes)" required>
 
-    <input type="number" name="price" placeholder="Price" required>
+    <input type="number" name="price" min="1" placeholder="Price" required>
 
     <textarea name="description" placeholder="Description"></textarea>
 
@@ -61,6 +61,7 @@
                 <th>Subcategory</th>
                 <th>Description</th>
                 <th>Status</th>
+                <th data-sort="created_at">created-at <i class="fa-solid fa-sort"></i></th>
                 <th>Actions</th>
                     </tr>
                 </thead>
@@ -81,9 +82,9 @@
     <select name="subcategory_id" id="edit-subcategory">
     </select>
 
-    <input type="number" id="edit-duration" name="duration" placeholder="Duration (minutes)" required>
+    <input type="number" id="edit-duration" min="1" name="duration" placeholder="Duration (minutes)" required>
 
-    <input type="number" id="edit-price" name="price" placeholder="Price" required>
+    <input type="number" id="edit-price" name="price"  min="1"placeholder="Price" required>
     <label>Status</label>
 <select name="service_status" id="serviceStatus">
     <option value="1">active</option>

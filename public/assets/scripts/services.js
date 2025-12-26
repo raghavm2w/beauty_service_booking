@@ -29,7 +29,6 @@ let sortOrder = "asc";
         activeCountElem.textContent = data.data.activeTotal;
         totalRows = data.data.totalRows;
         renderTable(data.data.services);
-        renderPagination();
     })
     .catch(err => {
         console.error("Error fetching services:", err);
@@ -41,15 +40,8 @@ function renderTable(services) {
 
     tableBody.innerHTML = "";
 
-    if (services.length === 0) {
-        tableBody.innerHTML = `
-            <tr>
-                <td colspan="6" style="text-align:center">No services found</td>
-            </tr>`;
-        return;
-    }
-
     services.forEach(service => {
+        console.log(service);
         tableBody.innerHTML += `
             <tr>
                 <td>${service.name}</td>
@@ -63,24 +55,31 @@ function renderTable(services) {
                         ${service.service_status === 1 ? 'active' : 'inactive'}
                     </span>
                 </td>
+                <td>${service.created_at}</td>
                 <td>
-                    <button class="action-btn" onclick="editServiceForm('${service.id}','${service.name}','${service.description}','${service.price}',
+                    <button class="action-btn" onclick="editServiceForm(${service.id},'${service.name}','${service.description}','${service.price}',
                     '${service.duration}','${service.service_status}','${service.category_id}','${service.subcategory_id}')"><i class="fa-solid fa-pen"></i></button>
                     <button class="action-btn" onclick="deleteService(${service.id})"><i class="fa-solid fa-trash"></i></button>
                 </td>
             </tr>
         `;
     });
-}
-function renderPagination() {
-    const start = (currentPage - 1) * limit + 1;
+     const start = (currentPage - 1) * limit + 1;
     const end = Math.min(currentPage * limit, totalRows);
 
     paginationInfo.textContent = `Showing ${start}-${end} of ${totalRows} services`;
 
     prevBtn.disabled = currentPage === 1;
     nextBtn.disabled = currentPage * limit >= totalRows;
+     if (services.length === 0) {
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="6" style="text-align:center">No services found</td>
+            </tr>`;
+        return;
+    }
 }
+
 
 prevBtn.addEventListener("click", () => {
     if (currentPage > 1) {

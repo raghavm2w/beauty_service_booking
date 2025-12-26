@@ -23,7 +23,6 @@ class AuthMiddleware
             return; 
 
         } catch (\Firebase\JWT\ExpiredException $e) {
-
             self::refreshAccessToken();
 
         } catch (\Exception $e) {
@@ -38,13 +37,12 @@ class AuthMiddleware
     {
         $user = new User();
         $refreshRow = $user->getValidRefreshToken();
-
         if (!$refreshRow) {
             error_log("no valid refresh token found");
             redirect(401,"/login");
             // error(401, "Unauthorized");
         }
-
+        error_log("refreshed token");
         if (strtotime($refreshRow['expires_at']) < time()) {
                         error_log("expired refresh token");
 
@@ -70,13 +68,13 @@ class AuthMiddleware
 
         $_REQUEST['auth_user'] = [
             'id'   => $userId,
-            'role' => $refreshRow['role']
+            'role' => $refreshRow['role'] === 1 ? 'provider':'customer'
         ];
     }
-     public static function providerOnly(): void
+     public static function providerOnly()
     {
         if (empty($_REQUEST['auth_user'])) {
-                        error_log("auth user not found");
+            error_log("auth user not found");
 
             redirect(401,"/login");
             //error(401, "Unauthorized");

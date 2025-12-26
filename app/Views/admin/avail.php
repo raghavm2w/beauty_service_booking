@@ -22,7 +22,7 @@
 <div id="dayModal" class="avail-modal">
   <div class="modal-content">
     <h3 id="modalDay"></h3>
-
+    <h4 id="modalDate"></h4>
     <label>Start Time</label>
     <input type="time" id="dayStart">
 

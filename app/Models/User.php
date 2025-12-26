@@ -8,12 +8,16 @@ class User extends Model{
 
      public function findByEmail(string $email)
     {
+        try{
           $stmt = $this->db->prepare(
             "SELECT * FROM users WHERE email = :email LIMIT 1"
         );
         $stmt->execute(['email' => $email]);
 
         return  $stmt->fetch(PDO::FETCH_ASSOC);
+    }catch(\Exception $e){
+        throw $e;
+    }
     }
      public function register(array $data)
     {
@@ -51,6 +55,7 @@ class User extends Model{
     }
     }
     public function setRefreshToken($data){
+        try{
         $refreshSql = "INSERT INTO refresh_tokens (user_id, refresh_token, expires_at)
                VALUES (:user_id, :refresh_token, :expires_at)";
 
@@ -60,16 +65,24 @@ class User extends Model{
              ':refresh_token' => $data['token'],
             ':expires_at'    => $data['expires_at']
         ]);
+         }catch(\Exception $e){
+        throw $e;
+    }
     }
     public function deleteRefreshToken(int $userId)
 {
+    try{
     $stmt = $this->db->prepare("
         DELETE FROM refresh_tokens WHERE user_id = :user_id
     ");
     return $stmt->execute([':user_id' => $userId]);
+     }catch(\Exception $e){
+        throw $e;
+    }
 }
 public function getValidRefreshToken()
 {
+    try{
     $stmt = $this->db->prepare("
         SELECT rt.user_id, rt.expires_at, u.role
         FROM refresh_tokens rt
@@ -81,5 +94,20 @@ public function getValidRefreshToken()
 
     $stmt->execute();
     return $stmt->fetch(PDO::FETCH_ASSOC);
+     }catch(\Exception $e){
+        throw $e;
+    }
+}
+public function updateTimezone($timezone,$id){
+    try{
+        $stmt = $this->db->prepare("
+        UPDATE users set timezone = ? WHERE id = ?
+    ");
+
+   return $stmt->execute([$timezone,$id]);
+
+    } catch(\Exception $e){
+        throw $e;
+    }
 }
 }

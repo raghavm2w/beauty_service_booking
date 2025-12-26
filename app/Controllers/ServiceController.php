@@ -13,30 +13,47 @@ class ServiceController extends Controller {
     }
      
 public function addService(){
+    try{
     $input = json_decode(file_get_contents("php://input"), true);
-  if (empty($input['name'])  || empty($input['price']) || empty($input['duration']) 
-    ||empty($input['category_id']) || empty($input['subcategory_id']) )
-        {
-            error(400,"All fields are required");
+      $required = ['name', 'category_id', 'subcategory_id', 'price', 'duration'];
+        foreach ($required as $field) {
+            if (!isset($input[$field])) {
+                error(400, "$field is required");
+            }
         }
-    $provider_id = $_REQUEST['auth_user']['id'];
-    $name = trim($input['name']);
-    $price = trim($input['price']);
-    $duration = (int) $input['duration'];
-    $description = trim($input['description'] ?? null);
-    $category_id = (int) $input['category_id'];
-    $subcategory_id = (int) $input['subcategory_id'];
-    
 
-        if (strlen($name) < 3) {
-            error(400,"Service name must be at least 3 characters.");
-        }
-         if (!is_numeric($price) || $price <= 0) {
-            error(400,"Enter a valid price value");
-        }
-        if (!is_numeric($duration) || $duration <= 0) {
-             error(400,"Enter a valid time duation minutes");
+         $provider_id = $_REQUEST['auth_user']['id'];
+          $name = trim($input['name']);
+        $description = trim($input['description'] ?? '');
 
+        $category_id = filter_var($input['category_id'], FILTER_VALIDATE_INT);
+        $subcategory_id = filter_var($input['subcategory_id'], FILTER_VALIDATE_INT);
+        $price = filter_var($input['price'], FILTER_VALIDATE_FLOAT);
+        $duration = filter_var($input['duration'], FILTER_VALIDATE_INT);
+
+        if (strlen($name) < 3 || strlen($name) > 50) {
+            error_log($name);
+            error(400, "Service name must be between 3 and 50 characters");
+        }
+        if (preg_match('/<script\b/i', $name)) {
+            error(400, "Invalid service name");
+        }
+        if (preg_match('/<script\b/i', $description)) {
+            error(400, "Invalid description");
+        }
+        if ($price === false || $price <= 0 || $price > 1000000) {
+            error(400, "Invalid price value");
+        }
+
+        if ($duration === false || $duration < 5 || $duration > 1440) {
+            error(400, "Duration must be valid number between 5 and 1440 minutes");
+        }
+        if (strlen($description) > 1500) {
+            error(400, "Description must not exceed 1500 characters");
+        }
+        // Category integrity check
+        if (!$this->service->isValidCategoryPair($category_id, $subcategory_id)) {
+            error(400, "Invalid category or subcategory");
         }
         $existingService = $this->service->getProviderServices($provider_id,$name);
         if ($existingService) {
@@ -48,7 +65,10 @@ public function addService(){
         }
         success(201,"Service added successfully");
 
-
+ }catch(\Exception $e){
+        error_log("service add error".$e->getMessage());
+        error(500,"An error occurred while adding services");
+}
 }
 
 public function fetchCategories(){
@@ -97,37 +117,51 @@ public function fetchServices(){
 public function editService(){
     try{
     $input = json_decode(file_get_contents("php://input"), true);
-  if (empty($input['id']) || empty($input['name'])  || empty($input['price']) || empty($input['duration']) 
-    ||empty($input['category_id']) || empty($input['subcategory_id']) || !isset($input['service_status']) )
-        {
-            error(400,"All fields are required");
+     $required = ['id','name', 'category_id', 'subcategory_id', 'price', 'duration','service_status'];
+        foreach ($required as $field) {
+            if (!isset($input[$field])) {
+                error(400, "$field is required");
+            }
         }
-    $service_id = (int) $input['id'];
     $provider_id = $_REQUEST['auth_user']['id'];
     $name = trim($input['name']);
-    $price = trim($input['price']);
-    $duration = (int) $input['duration'];
     $description = trim($input['description'] ?? null);
-    $category_id = (int) $input['category_id'];
-    $subcategory_id = (int) $input['subcategory_id'];
+   
     $service_status = (int) $input['service_status'];
+    $service_id = filter_var($input['id'], FILTER_VALIDATE_INT);
+     $category_id = filter_var($input['category_id'], FILTER_VALIDATE_INT);
+        $subcategory_id = filter_var($input['subcategory_id'], FILTER_VALIDATE_INT);
+        $price = filter_var($input['price'], FILTER_VALIDATE_FLOAT);
+        $duration = filter_var($input['duration'], FILTER_VALIDATE_INT);
 
-    
-
-        if (strlen($name) < 3) {
-            error(400,"Service name must be at least 3 characters.");
-        }
-         if (!is_numeric($price) || $price <= 0) {
-            error(400,"Enter a valid price value");
-        }
-        if (!is_numeric($duration) || $duration <= 0) {
-             error(400,"Enter a valid time duation minutes");
-
-        }
+        
         if (!in_array($service_status, [0, 1])) {
             error(400, "Invalid service status.");
         }
-       
+        if (strlen($name) < 3 || strlen($name) > 50) {
+            error_log($name);
+            error(400, "Service name must be between 3 and 50 characters");
+        }
+        if (preg_match('/<script\b/i', $name)) {
+            error(400, "Invalid service name");
+        }
+        if (preg_match('/<script\b/i', $description)) {
+            error(400, "Invalid description");
+        }
+        if ($price === false || $price <= 0 || $price > 1000000) {
+            error(400, "Invalid price value");
+        }
+
+        if ($duration === false || $duration < 5 || $duration > 1440) {
+            error(400, "Duration must be valid number between 5 and 1440 minutes");
+        }
+        if (strlen($description) > 1500) {
+            error(400, "Description must not exceed 1500 characters");
+        }
+        // Category integrity check
+        if (!$this->service->isValidCategoryPair($category_id, $subcategory_id)) {
+            error(400, "Invalid category or subcategory");
+        }
         $result = $this->service->editService($service_id,$provider_id, $name, $category_id, $subcategory_id, $price, $duration, $description, $service_status);
         if(!$result){
             error(500,"An error occurred while updating the service");
