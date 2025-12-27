@@ -195,6 +195,30 @@ public function logout()
         error(500, "Logout failed");
     }
 }
+function setTimezone(){
+    try{
+             $input = json_decode(file_get_contents("php://input"), true);
+             if(!isset($input['timezone'])){
+                error(400,"timezone value is required");
+             }
+             $timezone = $input['timezone'];
+            $provider_id = $_REQUEST['auth_user']['id'];
+               if(!isset($provider_id)){
+                error(400,"user id is required");
+             }
+
+             $isUpdated = $this->user->updateTimezone($timezone,$provider_id);
+             if(!$isUpdated){
+                error(500,"failed to update timezone");
+             }
+             success(200,"timezone updated");
+
+
+     } catch (\Exception $e) {
+        error_log("setting timezone error: " . $e->getMessage());
+        error(500, "setting timezone failed");
+    }
+}
 
 }
 

@@ -12,9 +12,9 @@ class ViewController extends Controller {
     public function showLogin(){
         return view("login");
     }
-    public function admin(){
-        return view("admin.main");
-    }
+    // public function admin(){
+    //     return view("admin.main");
+    // }
     public function adminServices(){
         return view("admin.services");
     }

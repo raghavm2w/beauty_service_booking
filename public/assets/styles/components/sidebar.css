@@ -1,10 +1,12 @@
 .app {
     display: flex;
+    box-sizing: border-box;
     min-height: 100vh;
 }
 .sidebar {
     width: 250px;
     /* background: #fff; */
+    max-height: 100vh;
     padding: 20px;
     display: flex;
     flex-direction: column;
@@ -90,4 +92,8 @@ color: #fff;
 }
 .action-btn :hover {
     color: #2563eb;
+}
+.settings{
+    display: none;
+    margin-left:5px;
 }

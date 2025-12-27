@@ -8,31 +8,44 @@ class Service extends Model{
 
     public function getCategories()
     {
+        try{
         $stmt = $this->db->query(
             "SELECT id, name FROM categories ORDER BY name ASC"
         );
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+         }catch(\Exception $e){
+        throw $e;
+    }
     }
       public function getSubcategories($id)
     {
+        try{
         $stmt = $this->db->prepare(
             "SELECT  id,name FROM subcategories WHERE category_id = :id ORDER BY name ASC"
         );
         $stmt->execute(['id' => $id]);
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+         }catch(\Exception $e){
+        throw $e;
+    }
     }
     public function getProviderServices($provider_id,$name)
     {
+        try{
         $stmt = $this->db->prepare(
             "SELECT id FROM services WHERE provider_id = :provider_id AND name = :name LIMIT 1"
         );
         $stmt->execute(['provider_id' => $provider_id,'name'=>$name]);
 
         return $stmt->fetch(PDO::FETCH_ASSOC);
+         }catch(\Exception $e){
+        throw $e;
+    }
     }
     public function addService($provider_id, $name, $category_id, $subcategory_id, $price, $duration, $description){
+        try{
         $sql = "
     INSERT INTO services
     (provider_id, name, category_id, subcategory_id, price, duration, description)
@@ -53,8 +66,12 @@ class Service extends Model{
     ]);
 
     return $this->db->lastInsertId();
+     }catch(\Exception $e){
+        throw $e;
+    }
     }
     public function countServices($provider_id,$search=""){
+        try{
         $stmt = $this->db->prepare(
             "SELECT COUNT(*) as total FROM services WHERE provider_id = :provider_id AND name LIKE :search"
         );
@@ -62,8 +79,12 @@ class Service extends Model{
 
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result ? (int)$result['total'] : 0;
+         }catch(\Exception $e){
+        throw $e;
+    }
     }
     public function getAllServices($provider_id, $search = "", $limit = 4, $offset = 0, $sort = 'name', $order = 'ASC'){
+        try{
         $allowedSortColumns = ['name', 'price', 'duration'];
         if (!in_array($sort, $allowedSortColumns)) {
             $sort = 'name';
@@ -104,8 +125,12 @@ class Service extends Model{
 
     $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+         }catch(\Exception $e){
+        throw $e;
+    }
     }
     public function countTotalServices($provider_id){
+        try{
         $stmt = $this->db->prepare(
             "SELECT COUNT(*) as total FROM services WHERE provider_id = :provider_id AND service_status != 2"
         );
@@ -113,16 +138,24 @@ class Service extends Model{
 
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result ? (int)$result['total'] : 0;
+         }catch(\Exception $e){
+        throw $e;
+    }
     }
     public function countActiveServices($provider_id){
+        try{
         $stmt = $this->db->prepare(
             "SELECT COUNT(*) as total FROM services WHERE provider_id = :provider_id AND service_status = 1"
         );
         $stmt->execute(['provider_id' => $provider_id]);    
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result ? (int)$result['total'] : 0; 
+         }catch(\Exception $e){
+        throw $e;
+    }
     }
     public function editService($serviceId, $provider_id, $name, $category_id, $subcategory_id, $price, $duration, $description,$service_status){
+       try{
         $sql = "
     UPDATE services
     SET name = :name,
@@ -146,8 +179,12 @@ class Service extends Model{
         ':provider_id'    => $provider_id,
         ':service_status' => $service_status
     ]);
+     }catch(\Exception $e){
+        throw $e;
+    }
 }
 function deleteService($serviceId, $provider_id){
+    try{
     $sql = "
     UPDATE services
     SET service_status = 2
@@ -158,5 +195,17 @@ function deleteService($serviceId, $provider_id){
         ':service_id'  => $serviceId,
         ':provider_id' => $provider_id
     ]);
+     }catch(\Exception $e){
+        throw $e;
+    }
 } 
+public  function isValidCategoryPair($category_id, $subcategory_id){
+    try{
+        $stmt = $this->db->prepare("SELECT id from subcategories WHERE id = ? AND category_id = ?");
+        return $stmt->execute([$subcategory_id, $category_id]);
+    
+    }catch(\Exception $e){
+        throw $e;
+    }
+}
 }
