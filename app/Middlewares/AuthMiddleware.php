@@ -42,7 +42,6 @@ class AuthMiddleware
             redirect(401,"/login");
             // error(401, "Unauthorized");
         }
-        error_log("refreshed token");
         if (strtotime($refreshRow['expires_at']) < time()) {
                         error_log("expired refresh token");
 
@@ -65,6 +64,7 @@ class AuthMiddleware
             'httponly' => true,
             'samesite' => 'Strict'
         ]);
+        error_log("refreshed token");
 
         $_REQUEST['auth_user'] = [
             'id'   => $userId,
@@ -82,6 +82,7 @@ class AuthMiddleware
         }
 
         if ($_REQUEST['auth_user']['role'] !== 'provider') {
+            error_log($_REQUEST['auth_user']['role']);
                         error_log("user is not provider");
             redirect(403,"/login");
             //error(403, "Forbidden");

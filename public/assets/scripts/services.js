@@ -28,6 +28,7 @@ let sortOrder = "asc";
         totalCountElem.textContent = data.data.overallTotal;
         activeCountElem.textContent = data.data.activeTotal;
         totalRows = data.data.totalRows;
+        console.log(data.data.services);
         renderTable(data.data.services);
     })
     .catch(err => {
@@ -39,7 +40,13 @@ function renderTable(services) {
     const tableBody = document.getElementById("serviceTableBody");
 
     tableBody.innerHTML = "";
-
+    if (services.length === 0) {
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="6" style="text-align:center">No services found</td>
+            </tr>`;
+        return;
+    }
     services.forEach(service => {
         console.log(service);
         tableBody.innerHTML += `
@@ -71,13 +78,7 @@ function renderTable(services) {
 
     prevBtn.disabled = currentPage === 1;
     nextBtn.disabled = currentPage * limit >= totalRows;
-     if (services.length === 0) {
-        tableBody.innerHTML = `
-            <tr>
-                <td colspan="6" style="text-align:center">No services found</td>
-            </tr>`;
-        return;
-    }
+     
 }
 
 
