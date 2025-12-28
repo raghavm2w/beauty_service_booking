@@ -114,5 +114,33 @@ class AuthMiddleware
         }
     }
 
- 
+ public static function checkAuth()
+{
+    if (empty($_COOKIE['access_token'])) {
+        return [
+            'loggedIn' => false,
+            'user' => null
+        ];
+    }
+
+    try {
+        $decoded = JWT::verifyJwt($_COOKIE['access_token']);
+
+        return [
+            'loggedIn' => true,
+            'user' => [
+                'id'   => $decoded->sub,
+                'role' => $decoded->role
+            ]
+        ];
+
+    } catch (\Exception $e) {
+        return [
+            'loggedIn' => false,
+            'user' => null
+        ];
+    }
+}
+
+
 }

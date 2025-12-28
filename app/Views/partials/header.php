@@ -1,3 +1,7 @@
+<?php
+ use App\Middlewares\AuthMiddleware;
+$auth = AuthMiddleware::checkAuth();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,8 +19,11 @@
     </div>
 
     <nav class="header-actions">
-      <a href="/login" class="header-link">Login</a>
+    <?php if ($auth['loggedIn']): ?>
       <a href="#" class="header-link" onclick="logout()">Log out</a>
+    <?php else: ?>
+            <a href="/login" class="header-link">Login</a>
+    <?php endif; ?>
 
     </nav>
   </div>
