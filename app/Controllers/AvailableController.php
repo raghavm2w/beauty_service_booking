@@ -82,9 +82,14 @@ class AvailableController extends Controller {
             $sunday = clone $monday;
             $sunday->modify('+6 days');
             $availability = $this->avail->getProviderAvailability($provider_id, $monday->format('Y-m-d'), $sunday->format('Y-m-d'));
+
             if(!$availability){
                 error(500,"An error occurred while fetching availability");
             }
+            foreach ($availability as &$slot) {
+            $slot['start_time'] = convertFromUTC($slot['start_time'], $timezone);
+            $slot['end_time']   = convertFromUTC($slot['end_time'], $timezone);
+        }
             success(200, "Availability fetched successfully", $availability);
         } catch(\Exception $e){
             error_log("An error occurred: " . $e->getMessage());
