@@ -51,10 +51,15 @@ class AuthMiddleware
         }
 
         $userId =  $refreshRow['user_id'];
-
+        $role_map = [
+             0 => 'customer',
+             1 => 'provider',
+            2 => 'admin'
+        ];
+        $role = $role_map[$refreshRow['role']];
         $newAccessToken = JWT::generateAccessToken(
             $userId,
-            $refreshRow['role']
+            $role
         );
 
         setcookie("access_token", $newAccessToken, [
@@ -64,11 +69,10 @@ class AuthMiddleware
             'httponly' => true,
             'samesite' => 'Strict'
         ]);
-        error_log("refreshed token");
 
         $_REQUEST['auth_user'] = [
             'id'   => $userId,
-            'role' => $refreshRow['role'] === 1 ? 'provider':'customer'
+            'role' => $role
         ];
     }
      public static function providerOnly()

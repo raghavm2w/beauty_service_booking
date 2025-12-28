@@ -19,10 +19,17 @@ class AvailableController extends Controller {
         if(empty($availability)){
             error(400,"Availability data is required");
         }
-        error_log(print_r($availability,true));
             if (empty($availability['start_time']) || empty($availability['end_time'])) {
-                error(400, "Start and end time required for availability");
+                error(400, "Start and end time required for showing availability");
             }
+            $timezone = $this->avail->getTimezone($provider_id);
+            $dummyDate = '1970-01-01';
+
+        $startUTC = convertToUTC($dummyDate, $availability['start_time'], $timezone);
+        $endUTC   = convertToUTC($dummyDate, $availability['end_time'], $timezone);
+            error_log($startUTC);
+        $availability['start_time'] = $startUTC;
+        $availability['end_time']   = $endUTC;
         $result = $this->avail->setWeeklyAvailability($provider_id, $availability);
         if(!$result){
             error(500,"An error occurred while saving availability");   
@@ -48,7 +55,11 @@ class AvailableController extends Controller {
         if(empty($startTime) || empty($endTime)){
             error(400,"Start time and end time are required");
         }
-        $result = $this->avail->setSingleDayAvailability($provider_id, $dayOfWeek, $startTime, $endTime, $date);
+        $timezone = $this->avail->getTimezone($provider_id);
+
+        $startUTC = convertToUTC($date, $startTime, $timezone);
+        $endUTC   = convertToUTC($date, $endTime, $timezone);
+        $result = $this->avail->setSingleDayAvailability($provider_id, $dayOfWeek, $startUTC, $endUTC, $date);
         if(!$result){
             error(500,"An error occurred while saving single day availability");   
         }
@@ -62,8 +73,9 @@ class AvailableController extends Controller {
     public function getAvailability(){
         try{
             $provider_id = $_REQUEST['auth_user']['id'];
-            $providerTimezone = $_GET['time_zone'] ?? 'Asia/Kolkata';
-            $tz = new \DateTimeZone($providerTimezone); 
+             $timezone = $this->avail->getTimezone($provider_id);
+             error_log($timezone);
+            $tz = new \DateTimeZone($timezone); 
             $today = new \DateTime('now', $tz);
              $monday = clone $today;
             $monday->modify('monday this week');
@@ -99,5 +111,7 @@ class AvailableController extends Controller {
             error(500, "Internal Server Error: ");
                 }
     }
+
+
 }
      

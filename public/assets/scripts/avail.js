@@ -53,8 +53,7 @@ const nextDateStr = toLocalDateString(nextDay);
 }
 async function fetchAvailability() {
   try {
-     const tz = "ASIA/Kolkata"; // Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const res = await fetch(`/admin/getAvailability?time_zone=${tz}`);
+    const res = await fetch(`/admin/getAvailability`);
     const rows = await res.json();
 
     weeklyAvailability = {};
@@ -181,6 +180,7 @@ document.getElementById("applyAll").onclick = () => {
   }
   
   const weeklyData = {"start_time":weeklyAvailability[1]["start"], "end_time":weeklyAvailability[1]["end"], status:1};
+
     saveWeeklyAvailability(weeklyData);
     fetchAvailability();
 

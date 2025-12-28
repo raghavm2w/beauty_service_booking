@@ -120,5 +120,18 @@ ON DUPLICATE KEY UPDATE
         throw $e;
     }
     }
+    public function getTimezone($id){
+    try{
+        $stmt = $this->db->prepare("
+        SELECT timezone from users  WHERE id = ?
+    ");
+
+    $stmt->execute([$id]);
+    return $stmt->fetch(PDO::FETCH_ASSOC)['timezone'];
+
+    } catch(\Exception $e){
+        throw $e;
+    }
+}
 
 }

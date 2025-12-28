@@ -63,7 +63,7 @@ function renderTable(services) {
                     </span>
                 </td>
                 <td>${service.created_at}</td>
-                <td>
+                <td class="tbl-action">
                     <button class="action-btn" onclick="editServiceForm(${service.id},'${service.name}','${service.description}','${service.price}',
                     '${service.duration}','${service.service_status}','${service.category_id}','${service.subcategory_id}')"><i class="fa-solid fa-pen"></i></button>
                     <button class="action-btn" onclick="deleteService(${service.id})"><i class="fa-solid fa-trash"></i></button>
