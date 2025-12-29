@@ -110,5 +110,8 @@ public function updateTimezone($timezone,$id){
         throw $e;
     }
 }
+// public function updateUser(){
+
+// }
 
 }

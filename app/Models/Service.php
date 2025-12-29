@@ -208,4 +208,71 @@ public  function isValidCategoryPair($category_id, $subcategory_id){
         throw $e;
     }
 }
+public function fetchAllServices($where,$params,$limit,$offset){
+    try{
+           $sql = "
+            SELECT 
+                s.id,
+                s.name,
+                s.description,
+                s.price,
+                s.duration,
+                p.name AS provider_name
+            FROM services s
+            JOIN users p ON p.id = s.provider_id
+            $where AND s.service_status = 1
+            ORDER BY s.id DESC
+            LIMIT :limit OFFSET :offset
+        ";
+
+        $stmt = $this->db->prepare($sql);
+
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value);
+        }
+
+        $stmt->bindValue(':limit', $limit +1, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+
+    }catch(\Exception $e){
+        throw $e;
+    }
+}
+public function fetchSuggestions($limit,$query){
+    try{
+          $sql = "
+            SELECT DISTINCT
+                s.id,
+                s.name
+            FROM services s
+            LEFT JOIN categories c ON c.id = s.category_id
+            LEFT JOIN subcategories sc ON sc.id = s.subcategory_id
+            WHERE
+                s.name LIKE :q
+                OR c.name LIKE :q
+                OR sc.name LIKE :q
+            AND s.service_status = 1
+            ORDER BY s.name ASC
+            LIMIT :limit
+        ";
+
+        $stmt = $this->db->prepare($sql);
+
+        $likeQuery = "%{$query}%";
+
+        $stmt->bindValue(':q', $likeQuery, PDO::PARAM_STR);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+
+    }catch(\Exception $e){
+        throw $e;
+    }
+}
 }

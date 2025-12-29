@@ -119,7 +119,7 @@ public function editService(){
     $input = json_decode(file_get_contents("php://input"), true);
      $required = ['id','name', 'category_id', 'subcategory_id', 'price', 'duration','service_status'];
         foreach ($required as $field) {
-            if (!isset($input[$field])) {
+            if (!isset($input[$field]) || $input[$field] === '') {
                 error(400, "$field is required");
             }
         }
@@ -189,6 +189,61 @@ function deleteService(){
     }catch(\Exception $e){
         error_log("Delete service error: ".$e->getMessage());
         error(500,"An error occurred while deleting the service");
+    }
+}
+public function fetchAllServices(){
+    try{
+          $categoryId     = $_GET['category_id'] ?? null;
+        $subcategoryId  = $_GET['subcategory_id'] ?? null;
+        $search         = trim($_GET['search'] ?? '');
+        $page           = max(1, (int)($_GET['page'] ?? 1));
+        $limit          = max(1, (int)($_GET['limit'] ?? 6));
+        $offset         = ($page - 1) * $limit;
+           $where = [];
+        $params = [];
+
+        if (!empty($categoryId)) {
+            $where[] = "s.category_id = :category_id";
+            $params[':category_id'] = (int)$categoryId;
+        }
+
+        if (!empty($subcategoryId)) {
+            $where[] = "s.subcategory_id = :subcategory_id";
+            $params[':subcategory_id'] = (int)$subcategoryId;
+        }
+
+        if (!empty($search)) {
+            $where[] = "(s.name LIKE :search OR s.description LIKE :search)";
+            $params[':search'] = "%{$search}%";
+        }
+
+        $whereSql = $where ? "WHERE " . implode(" AND ", $where) : "";
+        $services = $this->service->fetchAllServices($whereSql,$params,$limit,$offset);
+          $hasMore = count($services) > $limit;
+        if ($hasMore) {
+            array_pop($services);
+        }
+        success(200,"services fetched success",["services"=>$services,"hasMore"=>$hasMore]);
+
+    }
+     catch(\Exception $e){
+        error_log("fetching all services error: ".$e->getMessage());
+        error(500,"An error occurred while fetching all services");
+    }
+}
+public function serviceSuggestions()
+{
+    try {
+        $query = trim($_GET['q'] ?? '');
+        if (strlen($query) < 2) {
+          success(200,"success",[]);
+        }
+          $limit = 6; 
+          $suggestions = $this->service->fetchSuggestions($limit,$query);
+          success(200,"suggestions fetched successfully",$suggestions);
+    }catch(\Exception $e){
+        error_log("fetching all services suggestions error: ".$e->getMessage());
+        error(500,"An error occurred while fetching service suggestions");
     }
 }
 }

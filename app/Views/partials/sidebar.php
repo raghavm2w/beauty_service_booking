@@ -15,9 +15,10 @@
     <!-- Sidebar -->
     <aside class="sidebar">
         <div class="profile">
+            <div class=profile-logo><i class="fa-solid fa-circle-user"></i></div>
             <div>
                 <h4>ServiceAdmin</h4>
-                <span>Business Manager</span>
+                <span>Service Provider</span>
             </div>
         </div>
 
