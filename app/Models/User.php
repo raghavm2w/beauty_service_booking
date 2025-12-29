@@ -110,4 +110,5 @@ public function updateTimezone($timezone,$id){
         throw $e;
     }
 }
+
 }

@@ -73,7 +73,7 @@ class Service extends Model{
     public function countServices($provider_id,$search=""){
         try{
         $stmt = $this->db->prepare(
-            "SELECT COUNT(*) as total FROM services WHERE provider_id = :provider_id AND name LIKE :search"
+            "SELECT COUNT(*) as total FROM services WHERE provider_id = :provider_id AND name LIKE :search AND service_status != 2"
         );
         $stmt->execute(['provider_id' => $provider_id, 'search' => "%$search%"]);
 

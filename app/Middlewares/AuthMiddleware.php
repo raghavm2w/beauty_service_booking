@@ -42,7 +42,6 @@ class AuthMiddleware
             redirect(401,"/login");
             // error(401, "Unauthorized");
         }
-        error_log("refreshed token");
         if (strtotime($refreshRow['expires_at']) < time()) {
                         error_log("expired refresh token");
 
@@ -52,10 +51,15 @@ class AuthMiddleware
         }
 
         $userId =  $refreshRow['user_id'];
-
+        $role_map = [
+             0 => 'customer',
+             1 => 'provider',
+            2 => 'admin'
+        ];
+        $role = $role_map[$refreshRow['role']];
         $newAccessToken = JWT::generateAccessToken(
             $userId,
-            $refreshRow['role']
+            $role
         );
 
         setcookie("access_token", $newAccessToken, [
@@ -68,7 +72,7 @@ class AuthMiddleware
 
         $_REQUEST['auth_user'] = [
             'id'   => $userId,
-            'role' => $refreshRow['role'] === 1 ? 'provider':'customer'
+            'role' => $role
         ];
     }
      public static function providerOnly()
@@ -82,6 +86,7 @@ class AuthMiddleware
         }
 
         if ($_REQUEST['auth_user']['role'] !== 'provider') {
+            error_log($_REQUEST['auth_user']['role']);
                         error_log("user is not provider");
             redirect(403,"/login");
             //error(403, "Forbidden");
@@ -109,5 +114,33 @@ class AuthMiddleware
         }
     }
 
- 
+ public static function checkAuth()
+{
+    if (empty($_COOKIE['access_token'])) {
+        return [
+            'loggedIn' => false,
+            'user' => null
+        ];
+    }
+
+    try {
+        $decoded = JWT::verifyJwt($_COOKIE['access_token']);
+
+        return [
+            'loggedIn' => true,
+            'user' => [
+                'id'   => $decoded->sub,
+                'role' => $decoded->role
+            ]
+        ];
+
+    } catch (\Exception $e) {
+        return [
+            'loggedIn' => false,
+            'user' => null
+        ];
+    }
+}
+
+
 }

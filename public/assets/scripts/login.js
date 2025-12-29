@@ -43,11 +43,10 @@ fetch('/login', {
    .then(res => res.json())
   .then(data => {
        if (data.status === "error") {
-           showMessage(data.message, "error");
+           showAlert(data.message, "error");
             loginForm.reset();
            return;
         }
-        showMessage(data.message, "success");
                 if(data.data.role === 'provider'){
             window.location.href = "/admin/dash";
             return;
@@ -57,12 +56,13 @@ fetch('/login', {
    
         }) .catch(err => {
         console.error("Fetch error:", err);
-        showMessage("An error occurred while login user", "error");
+        showAlert("An error occurred while login user", "error");
     });
 
    
       });
 function logout(){
+  console.log("ihii");
 fetch('/logout',{
         method: 'POST',
         credentials: 'include'
@@ -70,16 +70,15 @@ fetch('/logout',{
    .then(res => res.json())
   .then(data => {
        if (data.status === "error") {
-           showMessage(data.message, "error");
+           sh(data.message, "error");
            return;
         }
-        showMessage(data.message, "success");       
         window.location.href = "/";
 
    
         }) .catch(err => {
         console.error("logout error:", err);
-        showMessage("An error occurred while logout", "error");
+        showAlert("An error occurred while logout", "error");
     });
 }
   

@@ -251,3 +251,6 @@ td small {
         flex-direction: column;
     }
 }
+.tbl-action{
+    min-width: 100px;
+}

@@ -3,6 +3,11 @@
   padding: 0;
   box-sizing: border-box;
 }
+html, body {
+  /* height: 100%; */
+  
+  overflow: hidden; /* prevent body scroll */
+}
 :root {
   --primary: #0f172a;
   --text: #111827;

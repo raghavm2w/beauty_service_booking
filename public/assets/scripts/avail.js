@@ -53,8 +53,7 @@ const nextDateStr = toLocalDateString(nextDay);
 }
 async function fetchAvailability() {
   try {
-     const tz = "ASIA/Kolkata"; // Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const res = await fetch(`/admin/getAvailability?time_zone=${tz}`);
+    const res = await fetch(`/admin/getAvailability`);
     const rows = await res.json();
 
     weeklyAvailability = {};
@@ -62,17 +61,18 @@ async function fetchAvailability() {
 
     rows.data.forEach(row => {
       if (row.is_recurring == 1) {
+        console.log(row.start_time.slice(11,19));
         // weekly rule
         weeklyAvailability[row.day_of_week] = {
-          start: row.start_time?.slice(0,5),
-          end: row.end_time?.slice(0,5),
+          start: row.start_time?.slice(11,19),
+          end: row.end_time?.slice(11,19),
           status: row.status
         };
       } else if (row.is_recurring == 0 && row.change_date) {
         // date override (only current week already filtered by backend)
         dateOverrides[row.change_date] = {
-          start: row.start_time?.slice(0,5),
-          end: row.end_time?.slice(0,5),
+          start: row.start_time?.slice(11,19),
+          end: row.end_time?.slice(11,19),
           status: row.status
         };
       }
@@ -181,6 +181,7 @@ document.getElementById("applyAll").onclick = () => {
   }
   
   const weeklyData = {"start_time":weeklyAvailability[1]["start"], "end_time":weeklyAvailability[1]["end"], status:1};
+
     saveWeeklyAvailability(weeklyData);
     fetchAvailability();
 

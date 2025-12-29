@@ -28,6 +28,7 @@ let sortOrder = "asc";
         totalCountElem.textContent = data.data.overallTotal;
         activeCountElem.textContent = data.data.activeTotal;
         totalRows = data.data.totalRows;
+        console.log(data.data.services);
         renderTable(data.data.services);
     })
     .catch(err => {
@@ -39,7 +40,13 @@ function renderTable(services) {
     const tableBody = document.getElementById("serviceTableBody");
 
     tableBody.innerHTML = "";
-
+    if (services.length === 0) {
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="6" style="text-align:center">No services found</td>
+            </tr>`;
+        return;
+    }
     services.forEach(service => {
         console.log(service);
         tableBody.innerHTML += `
@@ -56,7 +63,7 @@ function renderTable(services) {
                     </span>
                 </td>
                 <td>${service.created_at}</td>
-                <td>
+                <td class="tbl-action">
                     <button class="action-btn" onclick="editServiceForm(${service.id},'${service.name}','${service.description}','${service.price}',
                     '${service.duration}','${service.service_status}','${service.category_id}','${service.subcategory_id}')"><i class="fa-solid fa-pen"></i></button>
                     <button class="action-btn" onclick="deleteService(${service.id})"><i class="fa-solid fa-trash"></i></button>
@@ -71,13 +78,7 @@ function renderTable(services) {
 
     prevBtn.disabled = currentPage === 1;
     nextBtn.disabled = currentPage * limit >= totalRows;
-     if (services.length === 0) {
-        tableBody.innerHTML = `
-            <tr>
-                <td colspan="6" style="text-align:center">No services found</td>
-            </tr>`;
-        return;
-    }
+     
 }
 
 
