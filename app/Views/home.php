@@ -17,8 +17,10 @@
         </p>
 
         <div class="hero-search">
-            <input type="text" placeholder="Search service or professional">
-            <button>Search</button>
+            <input type="text" id="homeSearch" placeholder="Search service" autocomplete="off">
+            <button class="clear-btn" id="homeClearBtn" type="submit"><i class="fa-solid fa-xmark"></i></button>
+            <button id="homeSearchBtn" class="search-button" type="button"><i class="fa fa-search"></i></button>
+            <div id="homeSuggestions" class="search-suggestions hidden"></div>
         </div>
 
         <div class="hero-trust">
@@ -64,28 +66,28 @@
                 <img src="/assets/images/hair-cut.jpeg" alt="">
                 <h3>Hair Styling <span>From $50</span></h3>
                 <p>Expert cuts, coloring, and treatments.</p>
-                <button>Book Service</button>
+                <button onclick="redirectServices()">Book Service</button>
             </div>
 
             <div class="service-card">
                 <img src="/assets/images/nails.webp" alt="">
                 <h3>Nails <span>From $35</span></h3>
                 <p>Luxury manicures and pedicures.</p>
-                <button>Book Service</button>
+                <button onclick="redirectServices()">Book Service</button>
             </div>
 
             <div class="service-card">
                 <img src="/assets/images/skincare.jpg" alt="">
                 <h3>Skincare <span>From $80</span></h3>
                 <p>Rejuvenating facial treatments.</p>
-                <button>Book Service</button>
+                <button onclick="redirectServices()">Book Service</button>
             </div>
 
             <div class="service-card">
                 <img src="/assets/images/makeup.jpeg" alt="">
                 <h3>Makeup <span>From $60</span></h3>
                 <p>Professional makeup artistry.</p>
-                <button>Book Service</button>
+                <button onclick="redirectServices()">Book Service</button>
             </div>
         </div>
     </section>

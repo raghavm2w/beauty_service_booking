@@ -3,12 +3,15 @@
     background: #fafafa; 
     font-family: 'Inter', sans-serif;
      margin-top: 70px; /* header height */ 
-     height: calc(100vh - 70px); background: #fafafa; } /* HERO */
+     /* height: calc(100vh - 70px); */
+      background: #fafafa;
+     } 
+     /* HERO */
  .services-hero
   {
      text-align: center;
       padding: 40px 20px;
-       background: linear-gradient(135deg, #fff1f7, #ffffff);
+       background: linear-gradient(135deg, #984066, #ffffff);
  }
 .services-hero h1 {
      font-size: 36px;
@@ -22,6 +25,7 @@
         border-radius: 50px;
         /* overflow: hidden; */
         position: relative;
+        padding:10px;
 
     }
 .services-search input { 
@@ -40,9 +44,11 @@
 .services-content {
              display: grid; 
              grid-template-columns: 240px 1fr;
-              height: 100%; padding: 20px 40px; 
+              /* height: 100%; */
+               padding: 20px 40px; 
               gap: 30px;
-             } /* SIDEBAR */ 
+             }
+              /* SIDEBAR */ 
  .category-sidebar {
                  height:fit-content; 
                  position: sticky;
@@ -54,28 +60,52 @@
                     align-self: flex-start; 
                 }
  .category-sidebar ul {
-
-                     list-style: none; margin-top: 15px; 
+             list-style: none;
+                 margin-top: 15px; 
                     } 
-                    .category-sidebar li {
-                         padding: 10px; border-radius: 10px; cursor: pointer; }
-                          .category-sidebar li.active, .category-sidebar li:hover {
-                             background: #ffedf4; color: #ff2e88;
-                             } /* SERVICES AREA */ 
+    .category-sidebar li {
+            padding: 10px;
+             border-radius: 10px;
+              cursor: pointer;
+             }
+         .category-sidebar li.active, .category-sidebar li:hover {
+                 background: #ffedf4;
+             color: #ff2e88;
+        }
+             /* SERVICES AREA */ 
         .subcategory-tabs {
-             display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;
+             display: flex;
+              gap: 10px;
+               margin-bottom: 20px;
+                flex-wrap: wrap;
              } 
              .subcategory-tabs button {
-                 border: 1px solid #ddd; padding: 8px 14px; border-radius: 20px; background: #fff; cursor: pointer; 
+                 border: 1px solid #ddd;
+                  padding: 8px 14px;
+                   border-radius: 20px;
+                    background: #fff;
+                     cursor: pointer; 
                 } 
                 .subcategory-tabs .active { 
-                    background: #ff2e88; color: #fff; border-color: #ff2e88; 
+                    background: #ff2e88;
+                     color: #fff;
+                      border-color: #ff2e88; 
                 } /* GRID */ 
                 .service-grid { 
-                    display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; padding: 20px 60px; 
+                    display: grid;
+                     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+                     gap: 20px;
+                      padding: 20px 60px; 
                 }
-                 .service-card { 
-                    background: #fff; padding: 14px; border-radius: 18px; text-align: left; height:fit-content; 
+    .service-card { 
+        background: #fff;
+        padding: 14px;
+        border-radius: 18px;
+         text-align: left;
+        display: flex;
+         flex-direction: column;
+         height: 100%;
+         border:.5px solid rgba(228, 18, 182, 0.3);
                 }
                  /* .service-card img { width: 100%; height: 140px; object-fit: cover; border-radius: 12px; } */
                  .service-card h3 { 
@@ -83,31 +113,43 @@
                     font-size: 16px; }
                      .meta
                      { 
-                        font-size: 13px; color: #777; }
+                        font-size:13px; 
+                         color: #777;
+                         }
                       .price {
-                         font-weight: 600; margin: 8px 0; 
+                         font-weight: 600;
+                          margin: 8px 0; 
                         } 
+                        .provider{
+                            margin-bottom:6px;
+                        }
                       .service-card button { 
-                        width: 100%; padding: 10px;
+                        width: 100%;
+                         padding: 10px;
                          border-radius: 20px; 
                          border: 1px solid #ff2e88;
                           background: transparent; 
-                          color: #ff2e88; cursor: pointer; 
+                          color: #ff2e88;
+                           cursor: pointer; 
+                               margin-top: auto;
+
                     }
   @media (max-width: 900px) {
-    .services-content { grid-template-columns: 1fr; } 
-                        } 
+    .services-content {
+         grid-template-columns: 1fr;
+         } 
+     } 
      .services-area {
                 display: flex; 
                 flex-direction: column;
           height: 100%;
                              }
-   .services-scroll {
+   /* .services-scroll {
      padding-right: 10px;
       flex: 1;
        max-height: calc(100vh - 180px); 
        overflow-y: auto;
-     }
+     } */
      .search-suggestions {
     position: absolute;
     top: 100%;
@@ -139,4 +181,17 @@
 .search-suggestions div:hover {
     background: #ffedf4;
     color: #ff2e88;
+}
+.services-search .search-btn{
+     background: #ff2e88;
+    color: #fff;
+    border: none;
+    /* padding: 0 30px; */
+    cursor: pointer;
+     display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
 }

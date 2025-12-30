@@ -6,7 +6,9 @@
 .hero {
     text-align: center;
     padding: 80px 20px;
-    background: linear-gradient(135deg, #fff1f7, #fefefe);
+    /* background: linear-gradient(135deg, #fff1f7, #fefefe); */
+       background: linear-gradient(135deg, #984066, #ffffff);
+
 }
 
 .badge {
@@ -31,12 +33,16 @@
 }
 
 .hero-search {
-    margin: 30px auto;
-    display: flex;
-    max-width: 450px;
-    background: #fff;
-    border-radius: 50px;
-    overflow: hidden;
+     margin-top: 25px;
+          display: flex;
+           max-width: 420px; 
+           margin-inline: auto; 
+           background: #fff;
+        border-radius: 50px;
+        /* overflow: hidden; */
+        position: relative;
+        padding:7px;
+
 }
 
 .hero-search input {
@@ -46,12 +52,25 @@
     outline: none;
 }
 
-.hero-search button {
+.hero-search .search-button {
     background: #ff2e88;
     color: #fff;
     border: none;
-    padding: 0 30px;
+    /* padding: 0 30px; */
     cursor: pointer;
+     display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+  
+}
+.hero-search .clear-btn{
+    background: none;
+    border:none;
+    margin-right:7px;
+    padding:5px;
 }
 
 .hero-trust {
