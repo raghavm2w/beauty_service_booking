@@ -1,5 +1,5 @@
+
 <?php include "partials/header.php"; ?>
-  <div id="messageBox" class="message"></div>
 
 <main class="auth-page">
   <h1 >Sign in</h1>
@@ -28,6 +28,7 @@
   </div>
 
 </main>
+
 
 
 

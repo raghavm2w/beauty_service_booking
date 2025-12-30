@@ -1,5 +1,4 @@
 <?php include "partials/header.php"; ?>
-  <div id="messageBox" class="message"></div>
 <main class="auth-page">
   <h1>Create an account</h1>
 

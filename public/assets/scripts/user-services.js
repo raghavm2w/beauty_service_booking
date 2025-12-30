@@ -2,7 +2,7 @@ let currentPage = 1;
 let hasMore = true;
 let isLoading = false;
 
-const LIMIT = 4;
+const LIMIT = 10;
 
 const filters = {
     category_id: "",
@@ -175,7 +175,8 @@ function renderServices(services) {
             <p class="desc">${service.description}</p>
 
             <p class="provider">by ${service.provider_name}</p>
-            <button>Book Now</button>
+            <button id="bookBtn" onclick="openBookNow(this)"  data-service-id="${service.id}"
+    data-provider-id="${service.provider_id}">Book Now</button>
         `;
 
         grid.appendChild(card);
