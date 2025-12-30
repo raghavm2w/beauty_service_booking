@@ -105,8 +105,7 @@ searchInput.addEventListener("input", () => {
         fetchServices();
     }, 400);
 });
-
-/* ---------------- SORTING ---------------- */
+//sorting
 headers.forEach(header => {
     header.addEventListener("click", () => {
         const column = header.dataset.sort;
@@ -125,7 +124,7 @@ headers.forEach(header => {
 fetchServices();
 
 
-function editServiceForm(serviceId,name,description,price,duration,service_status,category_id,subcategory_id) {
+async function editServiceForm(serviceId,name,description,price,duration,service_status,category_id,subcategory_id) {
     document.getElementById('editmodalOverlay').style.display = 'block';
     document.getElementById('editServiceModal').style.display = 'block';
     document.getElementById('edit_id').value = serviceId;
@@ -133,11 +132,16 @@ function editServiceForm(serviceId,name,description,price,duration,service_statu
     document.getElementById('edit-description').value = description;
     document.getElementById('edit-price').value = price;
     document.getElementById('edit-duration').value = duration;
-    document.getElementById('edit-category').value = category_id;
-    document.getElementById('edit-subcategory').value = subcategory_id;
     document.getElementById('serviceStatus').value = service_status;
 
-   loadCategories('edit');
+  await loadCategories('edit');
+
+    const categorySelect = document.getElementById('edit-category');
+    categorySelect.value = category_id;
+
+    await loadEditSubcategories(category_id);
+
+    document.getElementById('edit-subcategory').value = subcategory_id;
 }
 function closeEditService(){
       document.getElementById('editmodalOverlay').style.display = 'none';
@@ -346,3 +350,23 @@ document.getElementById('edit-category').addEventListener('change', async functi
 
     subcategorySelect.disabled = false;
 });
+async function loadEditSubcategories(categoryId) {
+    const subcategorySelect = document.getElementById('edit-subcategory');
+
+    subcategorySelect.innerHTML = '<option value="">Loading...</option>';
+    subcategorySelect.disabled = true;
+
+    if (!categoryId) return;
+
+    const res = await fetch(`/admin/subcategories?id=${categoryId}`);
+    const subcategories = await res.json();
+
+    subcategorySelect.innerHTML = '<option value="">Select subcategory</option>';
+
+    subcategories.data.forEach(sub => {
+        subcategorySelect.innerHTML +=
+            `<option value="${sub.id}">${sub.name}</option>`;
+    });
+
+    subcategorySelect.disabled = false;
+}

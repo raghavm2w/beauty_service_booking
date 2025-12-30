@@ -66,11 +66,11 @@ fetch('/logout',{
   const data = await res.json();
 
   if (data.status === "success") {
-    showAlert("Timezone updated successfully");
+    showAlert("Timezone updated successfully","success");
     closeTimeForm();
     // location.reload(); 
   } else {
-    alert(data.message || "Failed to update timezone");
+    showAlert(data.message || "Failed to update timezone","error");
   }
 });
 

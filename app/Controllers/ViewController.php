@@ -24,4 +24,7 @@ class ViewController extends Controller {
     public function adminAvail(){
         return view("admin.avail");
     }
+       public function userServices(){
+        return view("user-services");
+    }
 }

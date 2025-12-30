@@ -1,0 +1,159 @@
+.home-main {
+    font-family: 'Inter', sans-serif;
+}
+
+/* HERO */
+.hero {
+    text-align: center;
+    padding: 80px 20px;
+    background: linear-gradient(135deg, #fff1f7, #fefefe);
+}
+
+.badge {
+    color: #ff2e88;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.hero h1 {
+    font-size: 48px;
+    margin: 20px 0;
+}
+
+.hero h1 span {
+    color: #ff2e88;
+}
+
+.hero-text {
+    max-width: 600px;
+    margin: auto;
+    color: #555;
+}
+
+.hero-search {
+    margin: 30px auto;
+    display: flex;
+    max-width: 450px;
+    background: #fff;
+    border-radius: 50px;
+    overflow: hidden;
+}
+
+.hero-search input {
+    flex: 1;
+    border: none;
+    padding: 15px 20px;
+    outline: none;
+}
+
+.hero-search button {
+    background: #ff2e88;
+    color: #fff;
+    border: none;
+    padding: 0 30px;
+    cursor: pointer;
+}
+
+.hero-trust {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #666;
+}
+
+.avatars img {
+    border-radius: 50%;
+    margin-right: -10px;
+    border: 2px solid #fff;
+}
+
+/* FEATURES */
+.features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+    gap: 20px;
+    padding: 60px 40px;
+    background: #fff;
+}
+.feature{
+    padding: 20px 40px;
+}
+
+.feature h4 {
+    margin-bottom: 10px;
+}
+
+/* SERVICES */
+.services {
+    padding: 80px 40px;
+    background: #fafafa;
+    text-align: center;
+}
+
+.section-subtext {
+    max-width: 600px;
+    margin: 10px auto 40px;
+    color: #666;
+}
+
+.service-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+    gap: 25px;
+}
+
+.service-card {
+    background: #fff;
+    padding: 15px;
+    border-radius: 16px;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+}
+
+.service-card img {
+    width: 100%;
+    height: 250px;
+    border-radius: 12px;
+}
+
+.service-card h3 {
+    display: flex;
+    justify-content: space-between;
+    font-size: 16px;
+}
+
+.service-card span {
+    color: #ff2e88;
+    font-size: 13px;
+}
+
+.service-card button {
+    width: 100%;
+    margin-top: 15px;
+    padding: 10px;
+    border: 1px solid #ff2e88;
+    background: transparent;
+    color: #ff2e88;
+    border-radius: 20px;
+    cursor: pointer;
+    align-self: flex-end;
+}
+
+/* TESTIMONIALS */
+.testimonials {
+    padding: 80px 40px;
+    text-align: center;
+}
+
+.testimonial-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px,1fr));
+    gap: 25px;
+    margin-top: 40px;
+}
+
+.testimonial-card {
+    background: #f9f9f9;
+    padding: 25px;
+    border-radius: 16px;
+}

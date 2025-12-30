@@ -25,10 +25,10 @@
     <div>
       <h4>Social links</h4>
       <div class="social-icons">
-        <span>🐦</span>
-        <span>📘</span>
-        <span>📸</span>
-        <span>🔗</span>
+        <span><i class="fa-brands fa-x-twitter"></i></span>
+        <span><i class="fa-brands fa-facebook"></i></span>
+        <span><i class="fa-brands fa-instagram"></i></span>
+        <span><i class="fa-brands fa-google"></i></span>
       </div>
     </div>
 
@@ -41,6 +41,8 @@
 <script src="/assets/scripts/base.js"></script>
 <script src="/assets/scripts/register.js"></script>
 <script src="/assets/scripts/login.js"></script>
+<script src="/assets/scripts/user-services.js"></script>
+
 
 </body>
 </html>
