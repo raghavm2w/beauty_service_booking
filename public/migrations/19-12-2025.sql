@@ -117,37 +117,6 @@ CREATE TABLE payments (
     CONSTRAINT fk_payment_booking FOREIGN KEY (booking_id)
         REFERENCES bookings(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-CREATE TABLE carts (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    user_id BIGINT UNSIGNED NOT NULL,
-    total_amount DECIMAL(10,2) DEFAULT 0.00,
-    status TINYINT(1) DEFAULT 0 COMMENT '0-active,1-checked_out',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-
-    INDEX(user_id),
-    CONSTRAINT fk_cart_user FOREIGN KEY (user_id)
-        REFERENCES users(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-CREATE TABLE cart_items (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    cart_id BIGINT UNSIGNED NOT NULL,
-    service_id BIGINT UNSIGNED NOT NULL,
-    price DECIMAL(10,2) NOT NULL,
-    quantity INT DEFAULT 1,
-    subtotal DECIMAL(10,2) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-
-    UNIQUE(cart_id, service_id),
-    INDEX(cart_id),
-    INDEX(service_id),
-
-    CONSTRAINT fk_cart_item_cart FOREIGN KEY (cart_id)
-        REFERENCES carts(id) ON DELETE CASCADE,
-    CONSTRAINT fk_cart_item_service FOREIGN KEY (service_id)
-        REFERENCES services(id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 CREATE TABLE logs (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT UNSIGNED NULL,

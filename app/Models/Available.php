@@ -133,5 +133,123 @@ ON DUPLICATE KEY UPDATE
         throw $e;
     }
 }
+public function getRecurringAvailability($id){
+    try{
+          $stmt = $this->db->prepare("
+        SELECT day_of_week, status
+        FROM provider_availability
+        WHERE provider_id = :provider_id
+        AND is_recurring = 1
+    ");
+
+    $stmt->execute([
+        ':provider_id' => $id
+    ]);
+
+    $workingDays = [];
+    $offDays = [];
+
+    foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+        $day = (int) $row['day_of_week'];
+
+        if ((int)$row['status'] === 1) {
+            $workingDays[] = $day;
+        } else {
+            $offDays[] = $day;
+        }
+    }
+    return ["workingDays"=>$workingDays,
+            "offDays"=>$offDays
+    ];
+
+    }catch(\Exception $e){
+        throw $e;
+    }
+}
+public function getServiceById($service_id,$provider_id){
+    try{
+         $stmt = $this->db->prepare("
+        SELECT duration,price
+        FROM services
+        WHERE id = :service_id
+        AND provider_id = :provider_id
+        AND service_status = 1
+    ");
+    $stmt->execute([
+        ':service_id' => $service_id,
+        ':provider_id' => $provider_id
+    ]);
+
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+
+
+    }catch(\Exception $e){
+        throw $e;
+    }
+}
+public function getDateOverride($providerId,$date){
+    try{
+         $stmt = $this->db->prepare("
+        SELECT start_time, end_time, status
+        FROM provider_availability
+        WHERE provider_id = :provider_id
+        AND is_recurring = 0
+        AND change_date = :date
+        LIMIT 1
+    ");
+    $stmt->execute([
+        ':provider_id' => $providerId,
+        ':date' => $date
+    ]);
+
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+
+    }catch(\Exception $e){
+        throw $e;
+    }
+}
+public function getDateWeekly($providerId,$dayOfWeek){
+    try{
+         $stmt = $this->db->prepare("
+            SELECT start_time, end_time, status
+            FROM provider_availability
+            WHERE provider_id = :provider_id
+            AND is_recurring = 1
+            AND day_of_week = :day
+            LIMIT 1
+        ");
+        $stmt->execute([
+            ':provider_id' => $providerId,
+            ':day' => $dayOfWeek
+        ]);
+
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+
+    }catch(\Exception $e){
+        throw $e;
+    }
+}
+
+public function getBookingsBetween($providerId, $startUtc, $endUtc){
+    try{
+        $stmt = $this->db->prepare("
+            SELECT start_time, end_time, status
+            FROM bookings
+            WHERE provider_id = :provider_id
+            AND status != 3
+            AND (
+                (start_time < :end_time AND end_time > :start_time)
+            )
+        ");
+        $stmt->execute([
+            ':provider_id' => $providerId,
+            ':start_time' => $startUtc,
+            ':end_time' => $endUtc
+        ]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }catch(\Exception $e){
+        throw $e;
+    }
+}
 
 }

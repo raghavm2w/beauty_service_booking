@@ -217,7 +217,8 @@ public function fetchAllServices($where,$params,$limit,$offset){
                 s.description,
                 s.price,
                 s.duration,
-                p.name AS provider_name
+                p.name AS provider_name,
+                p.id AS provider_id
             FROM services s
             JOIN users p ON p.id = s.provider_id
             $where AND s.service_status = 1

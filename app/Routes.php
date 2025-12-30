@@ -15,6 +15,9 @@ $router->get('/services',[ViewController::class, 'userServices']);
 
 $router->get('user/services',[ServiceController::class, 'fetchAllServices']);
 $router->get('user/service-suggestions',[ServiceController::class, 'serviceSuggestions']);
+$router->get('user/weekly-availability',[AvailableController::class, 'fetchWeeklyAvailability']);
+$router->get('user/service-slots',[AvailableController::class, 'fetchSlots']);
+
 $router->get('/admin/services', [[AuthMiddleware::class,'verify'],[AuthMiddleware::class,'providerOnly'],[ViewController::class, 'adminServices']]);
 $router->get('/admin/dash', [[AuthMiddleware::class,'verify'],[AuthMiddleware::class,'providerOnly'],[ViewController::class, 'adminDash']]);
 $router->get('/admin/avail', [[AuthMiddleware::class,'verify'],[AuthMiddleware::class,'providerOnly'],[ViewController::class, 'adminAvail']]);
