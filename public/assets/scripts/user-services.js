@@ -14,7 +14,13 @@ const suggestionsBox = document.getElementById("searchSuggestions");
 const clearBtn = document.getElementById("clearBtn");
 
 let searchTimeout = null;
+const params = new URLSearchParams(window.location.search);
+const searchQuery = params.get("search");
 
+if (searchQuery) {
+    filters.search = searchQuery;
+    fetchServices({ reset: true });
+}
 document.addEventListener("DOMContentLoaded", () => {
     fetchCategories();
       fetchServices({ reset: true });
@@ -259,7 +265,11 @@ function renderSuggestions(items) {
     });
     suggestionsBox.classList.remove("hidden");
 }
-
+document.getElementById("searchBtn").addEventListener("click",()=>{
+     filters.search = searchInput.value;
+                 hideSuggestions();
+            fetchServices({ reset: true });
+})
 function hideSuggestions() {
     suggestionsBox.classList.add("hidden");
     suggestionsBox.innerHTML = "";

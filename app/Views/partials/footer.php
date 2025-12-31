@@ -46,6 +46,7 @@
 <script src="/assets/scripts/user-services.js"></script>
  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="/assets/scripts/booking.js"></script>
+  <script src="/assets/scripts/home.js"></script>
 
 
 </body>

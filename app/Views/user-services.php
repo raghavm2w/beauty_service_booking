@@ -7,12 +7,14 @@
         <h1>Browse Beauty Services</h1>
         <p>Choose from top-rated professionals and services near you</p>
 
-        <form class="services-search" autocomplete="off">
+        <div class="services-search" autocomplete="off">
             <input id="searchInput" type="text" name="search" placeholder="Search service or category" autocomplete="off">
             <button id="clearBtn" type="submit"><i class="fa-solid fa-xmark"></i></button>
+            <button id="searchBtn" class="search-btn" type="button"><i class="fa fa-search"></i></button>
+
                 <div id="searchSuggestions" class="search-suggestions hidden"></div>
 
-        </form>
+        </div>
     </section>
 
     <section class="services-content">
@@ -32,10 +34,10 @@
             <div id="subcategoryTabs" class="subcategory-tabs">
               
             </div>
-            <div class="services-scroll" id="servicesScroll">
+            <!-- <div class="services-scroll" id="servicesScroll"> -->
             <div id="serviceGrid" class="service-grid">
                
-            </div>
+            <!-- </div> -->
             
     </div>
 
