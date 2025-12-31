@@ -40,7 +40,7 @@ class User extends Model{
         ]);
 
         $userId = $this->db->lastInsertId();
-         $accessToken = JWT::generateAccessToken($userId,$data['role']);
+         $accessToken = JWT::generateAccessToken($userId,$data['role_label']);
         $refreshData = JWT::generateRefreshToken($userId);
         $this->setRefreshToken($refreshData);// store in db
         $this->db->commit();

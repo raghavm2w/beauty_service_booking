@@ -26,7 +26,7 @@
             <a class="<?= str_contains($currentPage, 'dash') ? 'active' : '' ?> " href="/admin/dash"  >Dashboard</a>
             <a  class="<?= str_contains($currentPage, 'services') ? 'active' : '' ?> " href="/admin/services">My Services</a>
             <a class="<?= str_contains($currentPage, 'avail') ? 'active' : '' ?> " href="/admin/avail" >Availability</a>
-            <a class="<?= str_contains($currentPage, 'bookings') ? 'active' : '' ?> "href="#" >Bookings</a>
+            <a class="<?= str_contains($currentPage, 'bookings') ? 'active' : '' ?> "href="/admin/bookings" >Bookings</a>
             <a  class="<?= str_contains($currentPage, 'settings') ? 'active' : '' ?> " href="#" onclick="toggleSettings()">Settings</a>
             <div class="settings" >
             <a href="#" onclick="openTime()" >Timezone</a>

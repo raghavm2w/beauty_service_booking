@@ -9,9 +9,9 @@ let selectedServiceId = null;
 let datePickerInstance = null;
 
 let selectedSlot = null;
-function openBookNow(btn){
-     bookingModal.classList.add("active");
-    
+function openBookNow(btn) {
+  bookingModal.classList.add("active");
+
   selectedProviderId = btn.dataset.providerId;
   selectedServiceId = btn.dataset.serviceId;
 
@@ -20,7 +20,7 @@ function openBookNow(btn){
   confirmBtn.disabled = true;
   selectedSlot = null;
 
-fetch(`/user/weekly-availability?provider_id=${selectedProviderId}`)
+  fetch(`/user/weekly-availability?provider_id=${selectedProviderId}`)
     .then(res => res.json())
     .then(res => {
       if (res.status !== "success") {
@@ -45,7 +45,7 @@ fetch(`/user/weekly-availability?provider_id=${selectedProviderId}`)
       });
     })
     .catch((err) => {
-        console.log("error in loading avialability",err.message);
+      console.log("error in loading avialability", err.message);
       showAlert("Error loading availability");
     });
 }
@@ -81,10 +81,10 @@ function fetchAvailableSlots(date) {
 
 /* Render slots */
 function renderSlots(slots) {
-    if(slots.length === 0){
+  if (slots.length === 0) {
     slotsGrid.innerHTML = `<p class="no-slots">No slots available</p>`;
 
-    }
+  }
   slots.forEach(slot => {
     const btn = document.createElement("button");
     btn.className = "slot-btn";
@@ -113,22 +113,48 @@ function selectSlot(button, slot) {
 }
 
 /* Confirm booking */
-   
+
+
 confirmBtn.onclick = () => {
   if (!selectedSlot) return;
   if (!window.IS_LOGGED_IN) {
     showAlert("You must be logged in to book service");
 
-  setTimeout(() => {
-    window.location.href = '/login';
-  }, 1500);
+    setTimeout(() => {
+      window.location.href = '/login';
+    }, 1500);
     return;
-  }    
-  console.log("Booking confirmed:", selectedSlot);
+  }
 
-  // Send to backend:
-  // fetch('/book', { method: 'POST', body: JSON.stringify(...) })
+  const payload = {
+    provider_id: selectedProviderId,
+    service_id: selectedServiceId,
+    date: datePickerInstance.input.value, 
+    start_time: selectedSlot.start_time,
+    end_time: selectedSlot.end_time
+  };
 
-//   showAlert(`Booked ${selectedSlot.start} - ${selectedSlot.end}`,"success");
-  bookingModal.classList.remove("active");
+  fetch('/user/book-slot', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.status === 'success') {
+        showAlert("Booking confirmed! Redirecting to payment...", "success");
+        bookingModal.classList.remove("active");
+        setTimeout(() => {
+          window.location.href = `/payments?booking_id=${data.data.booking_id}`;
+        }, 1500);
+      } else {
+        showAlert(data.message || "Booking failed", "error");
+      }
+    })
+    .catch(err => {
+      console.error("Booking error:", err);
+      showAlert("An error occurred while booking", "error");
+    });
 };

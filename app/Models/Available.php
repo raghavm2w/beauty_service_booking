@@ -42,31 +42,30 @@ ON DUPLICATE KEY UPDATE
         throw $e;
     }
     }
-    public function setSingleDayAvailability($provider_id, $dayOfWeek, $startTime, $endTime, $date){
+    public function setSingleDayAvailability($provider_id, $startTime, $endTime, $date){
         try{
-        $stmt = $this->db->prepare("INSERT INTO provider_availability (
-            provider_id,
-            day_of_week,
-            start_time,
-            end_time,
-            is_recurring,
-            change_date,
-            status
-        ) VALUES (
-            ?, ?, ?, ?, 0, ?, 1
-        )
-        ON DUPLICATE KEY UPDATE
-            start_time = VALUES(start_time),
-            end_time   = VALUES(end_time),
-            status     = 1,
-            is_recurring = 0,
-            change_date  = VALUES(change_date);");
+       $stmt = $this->db->prepare("
+            INSERT INTO provider_availability (
+                provider_id,
+                change_date,
+                start_time,
+                end_time,
+                is_recurring,
+                status
+            ) VALUES (
+                ?, ?, ?, ?, 0, 1
+            )
+            ON DUPLICATE KEY UPDATE
+                start_time = VALUES(start_time),
+                end_time   = VALUES(end_time),
+                status     = 1
+        ");
+
         return $stmt->execute([
             $provider_id,
-            $dayOfWeek,
+            $date,
             $startTime,
-            $endTime,
-            $date
+            $endTime
         ]);
          }catch(\Exception $e){
         throw $e;
@@ -97,23 +96,21 @@ ON DUPLICATE KEY UPDATE
         throw $e;
     }
     }
-    public function setDayOff($provider_id, $dayOfWeek, $date){
+    public function setDayOff($provider_id, $date){
         try{
-        $stmt = $this->db->prepare("INSERT INTO provider_availability (
-            provider_id,
-            day_of_week,
-            is_recurring,
-            change_date,
-            status
-        ) VALUES (
-            ?, ?, 0, ?, 0
-        )
-        ON DUPLICATE KEY UPDATE
-            status     = 0,
-            change_date  = VALUES(change_date);");
+        $stmt = $this->db->prepare(" INSERT INTO provider_availability (
+                provider_id,
+                change_date,
+                is_recurring,
+                status
+            ) VALUES (
+                ?, ?, 0, 0
+            )
+            ON DUPLICATE KEY UPDATE
+                status = 0
+        ");
         return $stmt->execute([
             $provider_id,
-            $dayOfWeek,
             $date
         ]);
          }catch(\Exception $e){

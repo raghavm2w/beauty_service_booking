@@ -25,7 +25,7 @@ $auth = AuthMiddleware::checkAuth();
             <a href="/services" class="header-link">Services</a>
 
     <?php if ($auth['loggedIn']): ?>
-        <a href="#" class="header-link">Bookings</a>
+        <a href="/bookings" class="header-link">Bookings</a>
 
       <a href="#" class="header-link" onclick="logout()">Log out</a>
 

@@ -112,24 +112,26 @@ fetch('/register', {
     })
    .then(res => res.json())
   .then(data => {
+
        if (data.status === "error") {
-           showMessage(data.message, "error");
+           showAlert(data.message, "error");
             form.reset();
            return;
         }
-        console.log(data.data.user_id);
-        showMessage(data.message, "success");
+        showAlert(data.message, "success");
                 form.reset();
         if(data.data.role === 'provider'){
             window.location.href = "/admin/dash";
+            return;
         }else{
         window.location.href = "/";
+        return;
         }
 
    
         }) .catch(err => {
         console.error("Fetch error:", err);
-        showMessage("An error occurred while registering user", "error");
+        showAlert("An error occurred while registering user", "error");
     });
 
    
