@@ -14,8 +14,7 @@
     <div class="table-header">
         <div class="filters">
             <select id="statusFilter" class="filter-select">
-                <option value="">All Statuses</option>
-                <option value="pending">Pending</option>
+                <option value="">All</option>
                 <option value="confirmed">Confirmed</option>
                 <option value="completed">Completed</option>
                 <option value="cancelled">Cancelled</option>
@@ -40,15 +39,14 @@
                 </tr>
             </thead>
             <tbody id="bookingsTableBody">
-                <!-- Rows will be injected by JS -->
             </tbody>
         </table>
         
         <div class="pagination">
             <span id="paginationInfo">Showing 0-0 of 0</span>
             <div class="pagination-controls">
-                <button id="prevBtn" disabled>Previous</button>
-                <button id="nextBtn" disabled>Next</button>
+                <button id="prevBookingsBtn" disabled>Previous</button>
+                <button id="nextBookingsBtn" disabled>Next</button>
             </div>
         </div>
     </div>

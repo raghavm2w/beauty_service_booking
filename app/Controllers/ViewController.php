@@ -2,38 +2,57 @@
 namespace App\Controllers;
 use App\Core\Controller;
 
-class ViewController extends Controller {
-    public function home() {
+class ViewController extends Controller
+{
+    public function home()
+    {
         return $this->view('home');
     }
-     public function showRegister(){
+    public function showRegister()
+    {
         return view("register");
     }
-    public function showLogin(){
+    public function showLogin()
+    {
         return view("login");
     }
     // public function admin(){
     //     return view("admin.main");
     // }
-    public function adminServices(){
+    public function adminServices()
+    {
         return view("admin.services");
     }
-     public function adminDash(){
+    public function adminDash()
+    {
         return view("admin.dash");
     }
-    public function adminAvail(){
+    public function adminAvail()
+    {
         return view("admin.avail");
     }
-       public function userServices(){
+    public function userServices()
+    {
         return view("user-services");
     }
-     public function payments(){
+    public function payments()
+    {
         return view("payments");
     }
-    public function userBookings(){
+    public function userBookings()
+    {
         return view("user-bookings");
     }
-      public function adminBookings(){
+    public function adminBookings()
+    {
         return view("admin.bookings");
+    }
+    public function editProfile()
+    {
+        return view("user-edit-profile");
+    }
+    public function adminProfile()
+    {
+        return view("admin.admin-edit-profile");
     }
 }
