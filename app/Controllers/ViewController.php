@@ -27,5 +27,13 @@ class ViewController extends Controller {
        public function userServices(){
         return view("user-services");
     }
-   
+     public function payments(){
+        return view("payments");
+    }
+    public function userBookings(){
+        return view("user-bookings");
+    }
+      public function adminBookings(){
+        return view("admin.bookings");
+    }
 }

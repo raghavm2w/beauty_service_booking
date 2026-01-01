@@ -73,6 +73,7 @@ class AuthController extends Controller{
             'password' => password_hash($password, PASSWORD_DEFAULT)
         ];
         $userData['role'] = $roleMap[$role]; 
+        $userData['role_label'] = $role;
          if ($this->user->findByEmail($email)) {
             error(400,"email already exists");
         }

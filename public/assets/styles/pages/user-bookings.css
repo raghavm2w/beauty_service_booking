@@ -1,0 +1,123 @@
+.booking-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 1rem 2rem;
+    background: #fafafa;
+    margin-top: 90px;
+    min-height: 65vh;
+}
+
+h1 {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+}
+
+.tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid #ddd;
+}
+
+.tab-btn {
+    background: none;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    color: #666;
+    border-bottom: 3px solid transparent;
+}
+
+.tab-btn.active {
+    color: #ff2e88;
+    border-bottom-color: #ff2e88;
+    font-weight: bold;
+}
+
+.bookings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 10px;
+    align-items: start;
+    width: 100%;
+}
+
+.booking-card {
+    background: #fff;
+    border-radius: 12px;
+    /* padding: 1rem; */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border: 1px solid #eee;
+    transition: transform 0.2s;
+}
+
+.booking-card:hover {
+    transform: translateY(-2px);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.service-name {
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.price {
+    color: #ff2e88;
+    font-weight: bold;
+}
+
+.card-body p {
+    margin: 0.5rem 0;
+    color: #555;
+    font-size: 0.95rem;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+}
+
+.status-confirmed,
+.status-upcoming {
+    background-color: #e3fcef;
+    color: #00a854;
+}
+
+.status-cancelled {
+    background-color: #fff2f0;
+    color: #ff4d4f;
+}
+
+.btn-cancel {
+    background-color: #fff;
+    color: #ff4d4f;
+    border: 1px solid #ff4d4f;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 1rem;
+    transition: all 0.2s;
+}
+
+.btn-cancel:hover {
+    background-color: #ff4d4f;
+    color: #fff;
+}
+
+.loading,
+.no-bookings {
+    text-align: center;
+    grid-column: 1 / -1;
+    color: #888;
+    margin-top: 2rem;
+}

@@ -22,9 +22,13 @@ class AvailableController extends Controller {
             if (empty($availability['start_time']) || empty($availability['end_time'])) {
                 error(400, "Start and end time required for showing availability");
             }
+
+            if ($availability['start_time'] >= $availability['end_time']) {
+                error(400, "End time must be after start time");
+            }
+
             $timezone = $this->avail->getTimezone($provider_id);
             $dummyDate = '1970-01-01';
-
         $startUTC = convertToUTC($dummyDate, $availability['start_time'], $timezone);
         $endUTC   = convertToUTC($dummyDate, $availability['end_time'], $timezone);
             error_log($startUTC);
@@ -52,14 +56,41 @@ class AvailableController extends Controller {
         if($dayOfWeek <0 || $dayOfWeek >6){
             error(400,"Invalid day of week");
         }
+        
+        // Past date validation
+        $timezone = $this->avail->getTimezone($provider_id);
+        $tz = new \DateTimeZone($timezone ?: 'UTC');
+        $today = new \DateTime('now', $tz);
+        $selectedDate = new \DateTime($date, $tz);
+        
+        $todayDateOnly = clone $today;
+        $todayDateOnly->setTime(0,0,0);
+        $selectedDate->setTime(0,0,0);
+
+        if ($selectedDate < $todayDateOnly) {
+            error(400, "Cannot set availability for past dates");
+        }
+        
+        // If updating for today, check against current time
+        if ($selectedDate == $todayDateOnly) {
+            $currentTime = $today->format('H:i');
+            // Assuming start_time is "HH:mm" or "HH:mm:ss"
+            if ($startTime < $currentTime) {
+                error(400, "Start time cannot be in the past for today");
+            }
+        }
+
         if(empty($startTime) || empty($endTime)){
             error(400,"Start time and end time are required");
         }
-        $timezone = $this->avail->getTimezone($provider_id);
-
+        
+        if ($startTime >= $endTime) {
+            error(400, "End time must be after start time");
+        }
+        
         $startUTC = convertToUTC($date, $startTime, $timezone);
         $endUTC   = convertToUTC($date, $endTime, $timezone);
-        $result = $this->avail->setSingleDayAvailability($provider_id, $dayOfWeek, $startUTC, $endUTC, $date);
+        $result = $this->avail->setSingleDayAvailability($provider_id, $startUTC, $endUTC, $date);
         if(!$result){
             error(500,"An error occurred while saving single day availability");   
         }
@@ -75,16 +106,32 @@ class AvailableController extends Controller {
             $provider_id = $_REQUEST['auth_user']['id'];
              $timezone = $this->avail->getTimezone($provider_id);
             $tz = new \DateTimeZone($timezone); 
-            $today = new \DateTime('now', $tz);
-             $monday = clone $today;
-            $monday->modify('monday this week');
-            $sunday = clone $monday;
-            $sunday->modify('+6 days');
-            $availability = $this->avail->getProviderAvailability($provider_id, $monday->format('Y-m-d'), $sunday->format('Y-m-d'));
+
+            $startParam = $_GET['start'] ?? null;
+            $endParam = $_GET['end'] ?? null;
+
+            if ($startParam && $endParam) {
+                $startDate = substr($startParam, 0, 10);
+                $endDate = substr($endParam, 0, 10);
+            } else {
+                $today = new \DateTime('now', $tz);
+                $monday = clone $today;
+                $monday->modify('monday this week');
+                $startDate = $monday->format('Y-m-d');
+                
+                $sunday = clone $monday;
+                $sunday->modify('+6 days'); 
+                $endDate = $sunday->format('Y-m-d');
+            }
+
+            $availability = $this->avail->getProviderAvailability($provider_id, $startDate, $endDate);
 
             if(!$availability){
-                error(500,"An error occurred while fetching availability");
-            }
+               
+                 if($availability === false){
+                     error(500,"An error occurred while fetching availability");
+                 }
+            }            
             foreach ($availability as &$slot) {
              if (!empty($slot['start_time'])) {
                 $slot['start_time'] = convertFromUTC($slot['start_time'], $timezone);
@@ -109,7 +156,7 @@ class AvailableController extends Controller {
         if($dayOfWeek <0 || $dayOfWeek >6){
             error(400,"Invalid day of week");
         }
-        $result = $this->avail->setDayOff($provider_id, $dayOfWeek, $date);
+        $result = $this->avail->setDayOff($provider_id, $date);
         if(!$result){
             error(500,"An error occurred while marking day off");   
         }

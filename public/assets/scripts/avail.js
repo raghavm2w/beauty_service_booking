@@ -3,38 +3,36 @@ let dateOverrides = {};        // YYYY-MM-DD overrides
 function buildEvents() {
   const events = [];
 
-  // Get Monday of current week
-  const today = new Date();
-  const day = today.getDay(); // 0 (Sun) - 6 (Sat)
-  const diffToMonday = (day === 0 ? -6 : 1) - day;
+  // Use FullCalendar's current view range
+  const view = calendar.view;
+  if (!view) return [];
 
-  const monday = new Date(today);
-  monday.setDate(today.getDate() + diffToMonday);
+  const start = new Date(view.activeStart);
+  const end = new Date(view.activeEnd);
 
-  for (let d = 0; d <= 6; d++) {
-    const eventDate = new Date(monday);
-    eventDate.setDate(monday.getDate() + d);
+  // Loop through each day in the visible range
+  for (let d = new Date(start); d < end; d.setDate(d.getDate() + 1)) {
+    const dayOfWeek = d.getDay(); // 0-6
+    const dateStr = toLocalDateString(d); // YYYY-MM-DD
 
-    // const dateStr = eventDate.toISOString().split("T")[0];
-        const dateStr = toLocalDateString(eventDate);
-const nextDay = new Date(eventDate);
-nextDay.setDate(eventDate.getDate() + 1);
-const nextDateStr = toLocalDateString(nextDay);
-    const data =
-      dateOverrides[dateStr] ??
-      weeklyAvailability[d];
+    // Check overrides first, then weekly
+    const data = dateOverrides[dateStr] ?? weeklyAvailability[dayOfWeek];
 
-    if (!data || data.status === 0){
+    const nextDay = new Date(d);
+    nextDay.setDate(d.getDate() + 1);
+    const nextDateStr = toLocalDateString(nextDay);
+
+    if (!data || data.status === 0) {
       events.push({
         start: `${dateStr}T00:00:00`,
-  end: `${nextDateStr}T00:00:00`,
-    display: "background",
+        end: `${nextDateStr}T00:00:00`,
+        display: "background",
         backgroundColor: "rgba(238, 45, 45, 0.5)",
-       extendedProps: {
-      isDayOff: true
-    }
-  });
-       continue;
+        extendedProps: {
+          isDayOff: true
+        }
+      });
+      continue;
     }
 
     events.push({
@@ -43,7 +41,7 @@ const nextDateStr = toLocalDateString(nextDay);
       end: `${dateStr}T${data.end}`,
       backgroundColor: "#35bd57ff",
       extendedProps: {
-        day: d,
+        day: dayOfWeek,
         date: dateStr
       }
     });
@@ -51,9 +49,13 @@ const nextDateStr = toLocalDateString(nextDay);
   return events;
 
 }
-async function fetchAvailability() {
+async function fetchAvailability(start, end) {
   try {
-    const res = await fetch(`/admin/getAvailability`);
+    let url = `/admin/getAvailability`;
+    if (start && end) {
+      url += `?start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}`;
+    }
+    const res = await fetch(url);
     const rows = await res.json();
 
     weeklyAvailability = {};
@@ -61,18 +63,17 @@ async function fetchAvailability() {
 
     rows.data.forEach(row => {
       if (row.is_recurring == 1) {
-        console.log(row.start_time.slice(11,19));
         // weekly rule
         weeklyAvailability[row.day_of_week] = {
-          start: row.start_time?.slice(11,19),
-          end: row.end_time?.slice(11,19),
+          start: row.start_time?.slice(11, 19),
+          end: row.end_time?.slice(11, 19),
           status: row.status
         };
       } else if (row.is_recurring == 0 && row.change_date) {
-        // date override (only current week already filtered by backend)
+        // date override
         dateOverrides[row.change_date] = {
-          start: row.start_time?.slice(11,19),
-          end: row.end_time?.slice(11,19),
+          start: row.start_time?.slice(11, 19),
+          end: row.end_time?.slice(11, 19),
           status: row.status
         };
       }
@@ -87,32 +88,47 @@ async function fetchAvailability() {
 // initailize full calender
 const calendar = new FullCalendar.Calendar(
   document.getElementById("calendar"), {
-    initialView: "timeGridWeek",
-      firstDay: 1,  // Week starts on Monday
-    allDaySlot: false,
-    editable: false,
-    selectable: false,
-    events: [],
+  initialView: "timeGridWeek",
+  firstDay: 1,  // Week starts on Monday
+  allDaySlot: false,
+  editable: false,
+  selectable: false,
+  events: [],
 
-    dateClick(info) {
-      const day = info.date.getDay();
-      const date = info.dateStr.split("T")[0];
-      openModal(day, date);
+  datesSet: function (info) {
+    fetchAvailability(info.startStr, info.endStr);
+  },
+
+  dateClick(info) {
+    const clickedDate = new Date(info.dateStr.split("T")[0]);
+    clickedDate.setHours(0, 0, 0, 0);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Prevent past dates
+    if (clickedDate < today) {
+      showAlert("Cannot modify past dates.", "error");
+      return;
     }
+
+    const day = info.date.getDay();
+    const date = info.dateStr.split("T")[0];
+    openModal(day, date);
   }
+}
 );
 
 calendar.render();
-fetchAvailability();
+
 
 let selectedDay = null;
 let selectedDate = null;
-function openModal(day,date) {
+function openModal(day, date) {
   selectedDay = day;
   selectedDate = date;
   document.getElementById("modalDate").innerText = date;
   document.getElementById("modalDay").innerText =
-    ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][day];
+    ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][day];
 
   const data = weeklyAvailability[day] || {};
   document.getElementById("dayStart").value = data.start || "";
@@ -124,22 +140,25 @@ function openModal(day,date) {
 function closeModal() {
   document.getElementById("dayModal").style.display = "none";
 }
-document.getElementById("saveDay").onclick = () => {
+document.getElementById("saveDay").onclick = async () => {
   weeklyAvailability[selectedDay] = {
     start: dayStart.value,
     end: dayEnd.value,
     status: 1
   };
-  // refreshCalendar();
- saveSingleDayAvailability(selectedDay,selectedDate, weeklyAvailability[selectedDay]);
- fetchAvailability();
+
+  await saveSingleDayAvailability(selectedDay, selectedDate, weeklyAvailability[selectedDay]);
+
+  // Fetch for current view range to verify/refresh
+  const view = calendar.view;
+  fetchAvailability(view.activeStart.toISOString(), view.activeEnd.toISOString());
 };
 
 document.getElementById("markOff").onclick = () => {
-  setDayOff(selectedDay,selectedDate);
+  setDayOff(selectedDay, selectedDate);
   closeModal();
 };
-async function setDayOff(dayOfWeek,date) {
+async function setDayOff(dayOfWeek, date) {
   try {
     const response = await fetch("/admin/set-dayoff", {
       method: "POST",
@@ -161,7 +180,11 @@ async function setDayOff(dayOfWeek,date) {
 
     // showAlert("Day marked as off", "success");
 
-    await fetchAvailability();
+    // showAlert("Day marked as off", "success");
+
+    // Refresh with current view
+    const view = calendar.view;
+    await fetchAvailability(view.activeStart.toISOString(), view.activeEnd.toISOString());
 
   } catch (err) {
     console.error("Set day off error:", err);
@@ -179,11 +202,11 @@ document.getElementById("applyAll").onclick = () => {
   for (let d = 0; d <= 6; d++) {
     weeklyAvailability[d] = { start, end, status: 1 };
   }
-  
-  const weeklyData = {"start_time":weeklyAvailability[1]["start"], "end_time":weeklyAvailability[1]["end"], status:1};
 
-    saveWeeklyAvailability(weeklyData);
-    fetchAvailability();
+  const weeklyData = { "start_time": weeklyAvailability[1]["start"], "end_time": weeklyAvailability[1]["end"], status: 1 };
+
+  saveWeeklyAvailability(weeklyData);
+  fetchAvailability();
 
 };
 async function saveWeeklyAvailability(weeklyAvailability) {
@@ -201,10 +224,10 @@ async function saveWeeklyAvailability(weeklyAvailability) {
     const data = await response.json();
 
     if (data.status === "error") {
-      showAlert(data.message || "Failed to save availability","error");
+      showAlert(data.message || "Failed to save availability", "error");
       return;
     }
-        showAlert(data.message || "availbility saved","success");
+    showAlert(data.message || "availbility saved", "success");
     console.log("Weekly availability saved");
 
   } catch (error) {
@@ -212,7 +235,7 @@ async function saveWeeklyAvailability(weeklyAvailability) {
     showAlert("Could not save availability. Please try again.");
   }
 }
-async function saveSingleDayAvailability(dayOfWeek,date, dayData) {
+async function saveSingleDayAvailability(dayOfWeek, date, dayData) {
   try {
     const response = await fetch("/admin/update-dayAvailability", {
       method: "POST",
@@ -230,12 +253,12 @@ async function saveSingleDayAvailability(dayOfWeek,date, dayData) {
 
     const data = await response.json();
 
-   if (data.status === "error") {
-      showAlert(data.message || "Failed to save availability","error");
+    if (data.status === "error") {
+      showAlert(data.message || "Failed to save availability", "error");
       return;
     }
     console.log("Day availability saved");
-      closeModal();
+    closeModal();
     return;
 
   } catch (error) {
