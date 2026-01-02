@@ -158,8 +158,17 @@ class BookingController extends Controller
 
             $userId = $_REQUEST['auth_user']['id'];
             $filter = $_GET['filter'] ?? 'upcoming';
+            $page   = max(1, (int)($_GET['page'] ?? 1));
+            $limit  = max(1, (int)($_GET['limit'] ?? 9));
+            $offset = ($page - 1) * $limit;
 
-            $bookings = $this->book->getUserBookings($userId, $filter);
+            // Fetch limit + 1 to check if there is a next page
+            $bookings = $this->book->getUserBookings($userId, $filter, $limit + 1, $offset);
+
+            $hasMore = count($bookings) > $limit;
+            if ($hasMore) {
+                array_pop($bookings);
+            }
 
             $availableModel = new Available();
             foreach ($bookings as &$booking) {
@@ -168,7 +177,10 @@ class BookingController extends Controller
                 $booking['end_time'] = convertFromUTC($booking['end_time'], $providerTimezone);
             }
 
-            success(200, "User bookings fetched", $bookings);
+            success(200, "User bookings fetched", [
+                'bookings' => $bookings,
+                'hasMore'  => $hasMore
+            ]);
         } catch (\Exception $e) {
             error_log("Fetch bookings error: " . $e->getMessage());
             error(500, "Internal Server Error");
@@ -206,6 +218,30 @@ class BookingController extends Controller
         } catch (\Exception $e) {
             error_log("Fetch provider bookings error: " . $e->getMessage());
             error(500, "Internal Server Error");
+        }
+    }
+
+    public function getTodayBookings()
+    {
+        try {
+            if (empty($_REQUEST['auth_user']['id'])) {
+                error(401, "Unauthorized");
+            }
+            $providerId = $_REQUEST['auth_user']['id'];
+            $bookings = $this->book->getTodayBookings($providerId);
+            
+         
+             $availableModel = new Available();
+             $providerTimezone = $availableModel->getTimezone($providerId) ?: 'UTC';
+
+            foreach ($bookings as &$booking) {
+                $booking['start_time'] = convertFromUTC($booking['start_time'], $providerTimezone);
+                $booking['end_time'] = convertFromUTC($booking['end_time'], $providerTimezone);
+            }
+
+            success(200, "Bookings fetched", $bookings);
+        } catch (\Exception $e) {
+            error(500, $e->getMessage());
         }
     }
 }

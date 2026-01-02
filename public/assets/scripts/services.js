@@ -14,7 +14,7 @@ let sortBy = "name";
 let sortOrder = "asc";
 
 /* ------ FETCH SERVICES ------ */
- function fetchServices() {
+function fetchServices() {
     const params = new URLSearchParams({
         page: currentPage,
         limit,
@@ -23,18 +23,18 @@ let sortOrder = "asc";
         order: sortOrder
     });
     fetch(`/admin/services-list?${params}`)
-    .then(res => res.json())
-    .then(data => {
-        totalCountElem.textContent = data.data.overallTotal;
-        activeCountElem.textContent = data.data.activeTotal;
-        totalRows = data.data.totalRows;
-        console.log(data.data.services);
-        renderTable(data.data.services);
-    })
-    .catch(err => {
-        console.error("Error fetching services:", err);
-        showAlert("Failed to load services", "error");
-    });
+        .then(res => res.json())
+        .then(data => {
+            totalCountElem.textContent = data.data.overallTotal;
+            activeCountElem.textContent = data.data.activeTotal;
+            totalRows = data.data.totalRows;
+            console.log(data.data.services);
+            renderTable(data.data.services);
+        })
+        .catch(err => {
+            console.error("Error fetching services:", err);
+            showAlert("Failed to load services", "error");
+        });
 }
 function renderTable(services) {
     const tableBody = document.getElementById("serviceTableBody");
@@ -56,7 +56,7 @@ function renderTable(services) {
                 <td>${service.duration} min</td>
                 <td>${service.category_name || "-"}</td>
                 <td>${service.subcategory_name || "-"}</td>
-                <td>${service.description?service.description:"-"}</td>
+                <td>${service.description ? service.description : "-"}</td>
                 <td>
                     <span class="badge ${service.service_status === 1 ? 'active' : 'inactive'}">
                         ${service.service_status === 1 ? 'active' : 'inactive'}
@@ -71,14 +71,14 @@ function renderTable(services) {
             </tr>
         `;
     });
-     const start = (currentPage - 1) * limit + 1;
+    const start = (currentPage - 1) * limit + 1;
     const end = Math.min(currentPage * limit, totalRows);
 
     paginationInfo.textContent = `Showing ${start}-${end} of ${totalRows} services`;
 
     prevBtn.disabled = currentPage === 1;
     nextBtn.disabled = currentPage * limit >= totalRows;
-     
+
 }
 
 
@@ -124,7 +124,7 @@ headers.forEach(header => {
 fetchServices();
 
 
-async function editServiceForm(serviceId,name,description,price,duration,service_status,category_id,subcategory_id) {
+async function editServiceForm(serviceId, name, description, price, duration, service_status, category_id, subcategory_id) {
     document.getElementById('editmodalOverlay').style.display = 'block';
     document.getElementById('editServiceModal').style.display = 'block';
     document.getElementById('edit_id').value = serviceId;
@@ -134,7 +134,7 @@ async function editServiceForm(serviceId,name,description,price,duration,service
     document.getElementById('edit-duration').value = duration;
     document.getElementById('serviceStatus').value = service_status;
 
-  await loadCategories('edit');
+    await loadCategories('edit');
 
     const categorySelect = document.getElementById('edit-category');
     categorySelect.value = category_id;
@@ -143,8 +143,8 @@ async function editServiceForm(serviceId,name,description,price,duration,service
 
     document.getElementById('edit-subcategory').value = subcategory_id;
 }
-function closeEditService(){
-      document.getElementById('editmodalOverlay').style.display = 'none';
+function closeEditService() {
+    document.getElementById('editmodalOverlay').style.display = 'none';
     document.getElementById('editServiceModal').style.display = 'none';
 }
 function deleteService(serviceId) {
@@ -153,14 +153,14 @@ function deleteService(serviceId) {
     document.getElementById('delete_id').value = serviceId;
 }
 function closeDeleteService() {
-       document.getElementById('deletemodalOverlay').style.display = 'none';
+    document.getElementById('deletemodalOverlay').style.display = 'none';
     document.getElementById('deleteServiceModal').style.display = 'none';
 }
 
 document.addEventListener('submit', (e) => {
-        if (!e.target.matches("#addServiceForm")) return;
+    if (!e.target.matches("#addServiceForm")) return;
     e.preventDefault();
-const addForm = document.getElementById('addServiceForm');
+    const addForm = document.getElementById('addServiceForm');
 
     const serviceData = {
         name: addForm.name.value.trim(),
@@ -171,6 +171,23 @@ const addForm = document.getElementById('addServiceForm');
         subcategory_id: addForm.subcategory.value
     };
 
+    if (!serviceData.name || serviceData.name.length < 3) {
+        showAlert("Service name must be at least 3 characters", "error");
+        return;
+    }
+    if (!serviceData.category_id || !serviceData.subcategory_id) {
+        showAlert("Please select both category and subcategory", "error");
+        return;
+    }
+    if (isNaN(serviceData.price) || serviceData.price <= 0) {
+        showAlert("Please enter a valid price", "error");
+        return;
+    }
+    if (isNaN(serviceData.duration) || serviceData.duration < 5) {
+        showAlert("Duration must be at least 5 minutes", "error");
+        return;
+    }
+
     fetch('/admin/add-service', {
         method: 'POST',
         headers: {
@@ -178,25 +195,25 @@ const addForm = document.getElementById('addServiceForm');
         },
         body: JSON.stringify(serviceData)
     })
-    .then(res => res.json())
-    .then(data => {
-        if (data.status === "error") {
-            // showMessage(data.message, "error");
-            showAlert(data.message,"error");
-                    addForm.reset();
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === "error") {
+                // showMessage(data.message, "error");
+                showAlert(data.message, "error");
+                addForm.reset();
 
-            return;
-        }
-        // showMessage(data.message, "success");
-        showAlert(data.message,"success");
-        addForm.reset();
-        closeServiceForm();
-        fetchServices();
-    })
-    .catch(err => {
-        console.error("Fetch error:", err);
-        showAlert("An error occurred while adding service", "error");
-    });
+                return;
+            }
+            // showMessage(data.message, "success");
+            showAlert(data.message, "success");
+            addForm.reset();
+            closeServiceForm();
+            fetchServices();
+        })
+        .catch(err => {
+            console.error("Fetch error:", err);
+            showAlert("An error occurred while adding service", "error");
+        });
 });
 document.getElementById('editServiceForm').addEventListener('submit', (e) => {
     e.preventDefault();
@@ -212,6 +229,23 @@ document.getElementById('editServiceForm').addEventListener('submit', (e) => {
         subcategory_id: editForm.subcategory_id.value,
         service_status: parseInt(editForm.serviceStatus.value)
     };
+
+    if (!serviceData.name || serviceData.name.length < 3) {
+        showAlert("Service name must be at least 3 characters", "error");
+        return;
+    }
+    if (!serviceData.category_id || !serviceData.subcategory_id) {
+        showAlert("Please select both category and subcategory", "error");
+        return;
+    }
+    if (isNaN(serviceData.price) || serviceData.price <= 0) {
+        showAlert("Please enter a valid price", "error");
+        return;
+    }
+    if (isNaN(serviceData.duration) || serviceData.duration < 5) {
+        showAlert("Duration must be at least 5 minutes", "error");
+        return;
+    }
     console.log(serviceData);
     fetch('/admin/edit-service', {
         method: 'POST',
@@ -220,21 +254,21 @@ document.getElementById('editServiceForm').addEventListener('submit', (e) => {
         },
         body: JSON.stringify(serviceData)
     })
-    .then(res => res.json())
-    .then(data => {
-        if (data.status === "error") {
-            showAlert(data.message,"error");
-            return;
-        }
-        showAlert(data.message,"success");
-        editForm.reset();
-        closeEditService();
-        fetchServices();
-    })
-    .catch(err => {
-        console.error("Fetch error:", err);
-        showAlert("An error occurred while updating service", "error");
-    });
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === "error") {
+                showAlert(data.message, "error");
+                return;
+            }
+            showAlert(data.message, "success");
+            editForm.reset();
+            closeEditService();
+            fetchServices();
+        })
+        .catch(err => {
+            console.error("Fetch error:", err);
+            showAlert("An error occurred while updating service", "error");
+        });
 });
 document.getElementById('deleteServiceForm').addEventListener('submit', (e) => {
     e.preventDefault();
@@ -249,25 +283,25 @@ document.getElementById('deleteServiceForm').addEventListener('submit', (e) => {
         },
         body: JSON.stringify({ id: serviceId })
     })
-    .then(res => res.json())
-    .then(data => {
-        if (data.status === "error") {
-            showAlert(data.message,"error");
-            return;
-        }
-        showAlert(data.message,"success");
-        closeDeleteService();
-        fetchServices();
-    })
-    .catch(err => {
-        console.error("Fetch error:", err);
-        showAlert("An error occurred while deleting service", "error");
-    });
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === "error") {
+                showAlert(data.message, "error");
+                return;
+            }
+            showAlert(data.message, "success");
+            closeDeleteService();
+            fetchServices();
+        })
+        .catch(err => {
+            console.error("Fetch error:", err);
+            showAlert("An error occurred while deleting service", "error");
+        });
 });
 function openServiceForm() {
     document.getElementById('modalOverlay').style.display = 'block';
     document.getElementById('serviceModal').style.display = 'block';
-   loadCategories('add');
+    loadCategories('add');
 }
 
 
@@ -276,33 +310,34 @@ function closeServiceForm() {
     document.getElementById('serviceModal').style.display = 'none';
 }
 
-async function loadCategories(type='add') {
-    try{
-    const res = await fetch('/admin/categories',{ headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-        },
-        credemtials: 'include'
-    });
-    const categories = await res.json();
-    let categorySelect;
-    if(type==='add'){
-     categorySelect = document.getElementById('category');
-    }
-    if(type==='edit'){
-     categorySelect = document.getElementById('edit-category');
-    }
-    categorySelect.innerHTML = '<option value="">Select category</option>';
+async function loadCategories(type = 'add') {
+    try {
+        const res = await fetch('/admin/categories', {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            credemtials: 'include'
+        });
+        const categories = await res.json();
+        let categorySelect;
+        if (type === 'add') {
+            categorySelect = document.getElementById('category');
+        }
+        if (type === 'edit') {
+            categorySelect = document.getElementById('edit-category');
+        }
+        categorySelect.innerHTML = '<option value="">Select category</option>';
 
-    categories.data.forEach(cat => {
-        categorySelect.innerHTML +=
-            `<option value="${cat.id}">${cat.name}</option>`;
-    });
-}catch(err){
-    console.error("Error loading categories:", err);
-}
+        categories.data.forEach(cat => {
+            categorySelect.innerHTML +=
+                `<option value="${cat.id}">${cat.name}</option>`;
+        });
+    } catch (err) {
+        console.error("Error loading categories:", err);
+    }
 }
 document.getElementById("category").addEventListener('change', async function (e) {
-        // if (!e.target.matches("#category") && !e.target.matches("#edit-category")) return;
+    // if (!e.target.matches("#category") && !e.target.matches("#edit-category")) return;
     const categoryId = e.target.value;
     const subcategorySelect = document.getElementById('subcategory');
 
@@ -327,7 +362,7 @@ document.getElementById("category").addEventListener('change', async function (e
     subcategorySelect.disabled = false;
 });
 document.getElementById('edit-category').addEventListener('change', async function (e) {
-  const categoryId = e.target.value;
+    const categoryId = e.target.value;
     const subcategorySelect = document.getElementById('edit-subcategory');
 
     subcategorySelect.innerHTML = '<option value="">Loading...</option>';

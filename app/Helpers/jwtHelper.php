@@ -53,6 +53,18 @@ class JwtHelper
         );
     }
 
+    public static function decodeWithoutVerification(string $token)
+    {
+        // Decode JWT without verification to extract payload from expired token
+        $parts = explode('.', $token);
+        if (count($parts) !== 3) {
+            throw new \Exception("Invalid token format");
+        }
+        
+        $payload = json_decode(base64_decode(strtr($parts[1], '-_', '+/')));
+        return $payload;
+    }
+
     public static function getBearerToken()
     {
         $headers = getallheaders();

@@ -35,19 +35,20 @@
   </div>
 
   <p class="copyright">
-    © 2025 Urban Company. All rights reserved.
+    © 2025 Beauty Queen. All rights reserved.
   </p>
 </footer>
     <div id="custom-alert" class="alert-box"></div>
 
 <script src="/assets/scripts/base.js"></script>
-<script src="/assets/scripts/register.js"></script>
-<script src="/assets/scripts/login.js"></script>
-<script src="/assets/scripts/user-services.js"></script>
  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="/assets/scripts/booking.js"></script>
-  <script src="/assets/scripts/home.js"></script>
-  <script src="/assets/scripts/user-bookings.js"></script>
+    <script src="/assets/scripts/home.js"></script>
+<script src="/assets/scripts/login.js"></script>
+<script src="/assets/scripts/register.js"></script>
+     <script src="/assets/scripts/user-bookings.js"></script>
+<script src="/assets/scripts/user-services.js"></script>
+
 
 
 </body>

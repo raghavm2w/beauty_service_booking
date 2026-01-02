@@ -23,7 +23,7 @@ class AuthMiddleware
             return; 
 
         } catch (\Firebase\JWT\ExpiredException $e) {
-            self::refreshAccessToken();
+            self::refreshAccessToken($_COOKIE['access_token']);
 
         } catch (\Exception $e) {
             error_log("JWT verification error: " . $e->getMessage());
@@ -33,25 +33,25 @@ class AuthMiddleware
         }
     }
 
-    private static function refreshAccessToken()
+    private static function refreshAccessToken($expiredToken)
     {
-        $user = new User();
-        $refreshRow = $user->getValidRefreshToken();
-        if (!$refreshRow) {
-            error_log("no valid refresh token found");
-            redirect(401,"/login");
-            // error(401, "Unauthorized");
-        }
-        if (strtotime($refreshRow['expires_at']) < time()) {
-                        error_log("expired refresh token");
+        try {
+            // Decode the expired token without verification to get user ID
+            $decoded = JWT::decodeWithoutVerification($expiredToken);
+            $userId = $decoded->sub;
+            
+            $user = new User();
+            $refreshRow = $user->getValidRefreshToken($userId);
+            if (!$refreshRow) {
+                error_log("no valid refresh token found for user: " . $userId);
+                redirect(401,"/login");
+            }
+            if (strtotime($refreshRow['expires_at']) < time()) {
+                error_log("expired refresh token");
+                redirect(401,"/login");
+            }
 
-              redirect(401,"/login");
-
-            //error(401, "Unauthorized");
-        }
-
-        $userId =  $refreshRow['user_id'];
-        $role_map = [
+            $role_map = [
              0 => 'customer',
              1 => 'provider',
             2 => 'admin'
@@ -69,11 +69,16 @@ class AuthMiddleware
             'httponly' => true,
             'samesite' => 'Strict'
         ]);
+        $_COOKIE['access_token'] = $newAccessToken;
 
-        $_REQUEST['auth_user'] = [
-            'id'   => $userId,
-            'role' => $role
-        ];
+            $_REQUEST['auth_user'] = [
+                'id'   => $userId,
+                'role' => $role
+            ];
+        } catch (\Exception $e) {
+            error_log("Refresh token error: " . $e->getMessage());
+            redirect(401,"/login");
+        }
     }
      public static function providerOnly()
     {

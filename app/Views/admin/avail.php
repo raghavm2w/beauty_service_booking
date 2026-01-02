@@ -6,7 +6,7 @@
 
   <div class="quick-setup">
         <div class="calendar-title">
-    <h3>Set Working Hours</h3>
+    <h3>Set Default Working Hours</h3>
     <input type="time" id="defaultStart">
     <input type="time" id="defaultEnd">
     </div>
@@ -21,17 +21,19 @@
 <!-- Modal -->
 <div id="dayModal" class="avail-modal">
   <div class="modal-content">
-    <h3 id="modalDay"></h3>
+    <div class="date-heading" >
+    <h4 id="modalDay"></h4>
     <h4 id="modalDate"></h4>
+    </div>
     <label>Start Time</label>
     <input type="time" id="dayStart">
 
     <label>End Time</label>
     <input type="time" id="dayEnd">
 
-    <div class="modal-actions">
+    <div class="avail-modal-actions">
       <button id="saveDay">Save</button>
-      <button id="markOff">Day Off</button>
+      <button id="markOff">Set Day-Off</button>
       <button onclick="closeModal()">Cancel</button>
     </div>
   </div>

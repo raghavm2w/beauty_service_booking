@@ -16,3 +16,22 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+function logout(){
+fetch('/logout',{
+        method: 'POST',
+        credentials: 'include'
+})
+   .then(res => res.json())
+  .then(data => {
+       if (data.status === "error") {
+           sh(data.message, "error");
+           return;
+        }
+        window.location.href = "/";
+
+   
+        }) .catch(err => {
+        console.error("logout error:", err);
+        showAlert("An error occurred while logout", "error");
+    });
+}

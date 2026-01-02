@@ -1,6 +1,15 @@
 <?php include __DIR__."/../partials/sidebar.php"; ?>
 
 <link rel="stylesheet" href="/assets/styles/pages/edit-profile.css">
+<style>
+    .btn-save {
+    background: #2563eb;
+    color: white;
+}
+.btn-save:hover {
+    background: #2059d4ff;
+}
+</style>
 <?php include __DIR__."/../partials/edit-profile.php"; ?>
 
 </div>

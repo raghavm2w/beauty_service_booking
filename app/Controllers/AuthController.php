@@ -31,8 +31,8 @@ class AuthController extends Controller
             $gender = strtolower($input['gender']);
             $role = strtolower(trim($input['role']));
             $phone = $input['phone'];
-            if (strlen($name) < 3 || strlen($name) > 30) {
-                error(400, "Name must be between  3  to 30 characters long.");
+            if (strlen($name) < 3 || strlen($name) > 100) {
+                error(400, "Name must be between 3 to 100 characters long.");
             }
             if (!preg_match("/^[A-Za-z ]+$/", $name)) {
                 error(400, "Username can contain only letters.");
@@ -40,7 +40,7 @@ class AuthController extends Controller
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 error(400, "Invalid email format.");
             }
-            if (strlen($email) > 50) {
+            if (strlen($email) > 100) {
                 error(400, "Email is too long.");
             }
             if (strlen($password) < 6) {
@@ -49,9 +49,11 @@ class AuthController extends Controller
             if ($password !== $confirmPassword) {
                 error(400, "Password and confirm password do not match.");
             }
-            if (!preg_match('/^[1-9]\d{9}$/', $phone)) {
-                error(400, "Invalid phone number");
+            if (!preg_match('/^[6-9]\d{9}$/', $phone)) {
+                error(400, "Invalid Indian mobile number (must be 10 digits starting with 6-9)");
             }
+            // Sanitize name
+            $name = htmlspecialchars(strip_tags($name), ENT_QUOTES, 'UTF-8');
             $allowedRoles = ['customer', 'provider', 'admin'];
             $allowedGender = ['male', 'female', 'other'];
             if (!in_array($role, $allowedRoles)) {
@@ -255,19 +257,19 @@ class AuthController extends Controller
             $updateData = [];
             if (!empty($input['name'])) {
                 $name = trim($input['name']);
-                if (strlen($name) < 3 || strlen($name) > 30) {
-                    error(400, "Name must be between 3 to 30 characters long.");
+                if (strlen($name) < 3 || strlen($name) > 100) {
+                    error(400, "Name must be between 3 to 100 characters long.");
                 }
                 if (!preg_match("/^[A-Za-z ]+$/", $name)) {
                     error(400, "Name can contain only letters.");
                 }
-                $updateData['name'] = $name;
+                $updateData['name'] = htmlspecialchars(strip_tags($name), ENT_QUOTES, 'UTF-8');
             }
 
             if (!empty($input['phone'])) {
                 $phone = $input['phone'];
-                if (!preg_match('/^[1-9]\d{9}$/', $phone)) {
-                    error(400, "Invalid phone number");
+                if (!preg_match('/^[6-9]\d{9}$/', $phone)) {
+                    error(400, "Invalid Indian mobile number (must be 10 digits starting with 6-9)");
                 }
                 $updateData['phone'] = $phone;
             }

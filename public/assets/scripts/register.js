@@ -17,6 +17,10 @@ const validateName = () => {
     showError(name, 'Name must be at least 3 characters');
     return false;
   }
+  if (name.value.trim().length > 100) {
+    showError(name, 'Name must be at most 100 characters');
+    return false;
+  }
   clearError(name);
   return true;
 };
@@ -33,10 +37,10 @@ const validateEmail = () => {
 };
 const validatePhone = () => {
   const phone = document.getElementById('phone');
-const regex = /^[1-9]\d{9}$/;
+  const regex = /^[6-9]\d{9}$/;
 
   if (!regex.test(phone.value.trim())) {
-    showError(phone, 'Enter a valid 10-digit phone number');
+    showError(phone, 'Enter a valid 10-digit mobile number starting with 6-9');
     return false;
   }
   clearError(phone);
@@ -72,68 +76,70 @@ const validateConfirmPassword = () => {
   clearError(confirm);
   return true;
 };
-document.getElementById('reg-name').addEventListener('input', validateName);
-document.getElementById('reg-email').addEventListener('input', validateEmail);
-document.getElementById('phone').addEventListener('input', validatePhone);
-document.getElementById('gender').addEventListener('change', validateGender);
-document.getElementById('reg-pass').addEventListener('input', validatePassword);
-document.getElementById('confirm_pass').addEventListener('input', validateConfirmPassword);
+if (form) {
+  document.getElementById('reg-name').addEventListener('input', validateName);
+  document.getElementById('reg-email').addEventListener('input', validateEmail);
+  document.getElementById('phone').addEventListener('input', validatePhone);
+  document.getElementById('gender').addEventListener('change', validateGender);
+  document.getElementById('reg-pass').addEventListener('input', validatePassword);
+  document.getElementById('confirm_pass').addEventListener('input', validateConfirmPassword);
+}
 const role = document.getElementById('role');
-form.addEventListener('submit', async (e) => {
-  e.preventDefault();
+if (form) {
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-  const isValid =
-    validateName() &&
-    validateEmail() &&
-    validatePhone() &&
-    validateGender() &&
-    validatePassword() &&
-    validateConfirmPassword();
+    const isValid =
+      validateName() &&
+      validateEmail() &&
+      validatePhone() &&
+      validateGender() &&
+      validatePassword() &&
+      validateConfirmPassword();
 
-  if (!isValid) return;
+    if (!isValid) return;
 
-  const payload = {
-    name: form.name.value.trim(),
-    email: form.email.value.trim(),
-    phone: form.phone.value.trim(),
-    gender: form.gender.value,
-    role: role.value,
-    password: form.password.value,
-    confirm_password: form.confirm_password.value
-  };
-  console.log(payload);
+    const payload = {
+      name: form.name.value.trim(),
+      email: form.email.value.trim(),
+      phone: form.phone.value.trim(),
+      gender: form.gender.value,
+      role: role.value,
+      password: form.password.value,
+      confirm_password: form.confirm_password.value
+    };
 
-fetch('/register', {
+    fetch('/register', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(payload)
     })
-   .then(res => res.json())
-  .then(data => {
+      .then(res => res.json())
+      .then(data => {
 
-       if (data.status === "error") {
-           showAlert(data.message, "error");
-            form.reset();
-           return;
+        if (data.status === "error") {
+          showAlert(data.message, "error");
+          form.reset();
+          return;
         }
         showAlert(data.message, "success");
-                form.reset();
-        if(data.data.role === 'provider'){
-            window.location.href = "/admin/dash";
-            return;
-        }else{
-        window.location.href = "/";
-        return;
+        form.reset();
+        if (data.data.role === 'provider' || data.data.role === 'admin') {
+          window.location.href = "/admin/dash";
+          return;
+        } else {
+          window.location.href = "/";
+          return;
         }
 
-   
-        }) .catch(err => {
+
+      }).catch(err => {
         console.error("Fetch error:", err);
         showAlert("An error occurred while registering user", "error");
-    });
-
-   
       });
-  
+
+
+  });
+}

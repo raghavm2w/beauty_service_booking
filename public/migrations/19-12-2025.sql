@@ -102,21 +102,7 @@ CREATE TABLE bookings (
     CONSTRAINT fk_booking_provider FOREIGN KEY (provider_id)
         REFERENCES users(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-CREATE TABLE payments (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    booking_id BIGINT UNSIGNED NOT NULL,
-    amount DECIMAL(10,2) NOT NULL,
-    status TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '0-pending,1-success,2-failure',
-    transaction_ref VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-    UNIQUE(transaction_ref),
-    INDEX(booking_id),
-
-    CONSTRAINT fk_payment_booking FOREIGN KEY (booking_id)
-        REFERENCES bookings(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 CREATE TABLE logs (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT UNSIGNED NULL,

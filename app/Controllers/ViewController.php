@@ -1,6 +1,10 @@
 <?php
 namespace App\Controllers;
 use App\Core\Controller;
+use App\Models\Booking;
+use App\Models\Service;
+use App\Models\User;
+
 
 class ViewController extends Controller
 {
@@ -16,16 +20,29 @@ class ViewController extends Controller
     {
         return view("login");
     }
-    // public function admin(){
-    //     return view("admin.main");
-    // }
+   
     public function adminServices()
     {
         return view("admin.services");
     }
     public function adminDash()
     {
-        return view("admin.dash");
+        $bookingModel = new Booking();
+        $serviceModel = new Service();
+        $userModel = new User();
+        
+        $providerId = $_REQUEST['auth_user']['id'];
+        $user = $userModel->findById($providerId);
+        $stats = $bookingModel->getDashboardStats($providerId);
+        $totalServices = $serviceModel->countActiveServices($providerId);
+        $todayBookings = $bookingModel->getTodayBookings($providerId);
+
+        return view("admin.dash", [
+            'user'=>$user,
+            'stats' => $stats,
+            'totalServices' => $totalServices,
+            'todayBookings' => $todayBookings
+        ]);
     }
     public function adminAvail()
     {

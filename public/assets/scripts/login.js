@@ -1,6 +1,5 @@
 const loginForm = document.getElementById('loginForm');
 
-
 const validateLoginEmail = () => {
   const email = document.getElementById('login-email');
   const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -12,6 +11,7 @@ const validateLoginEmail = () => {
   clearError(email);
   return true;
 };
+
 const validateLoginPassword = () => {
   const password = document.getElementById('login-pass');
 
@@ -22,65 +22,43 @@ const validateLoginPassword = () => {
   clearError(password);
   return true;
 };
-document.getElementById('login-email').addEventListener('change', validateLoginEmail);
-document.getElementById('login-pass').addEventListener('input', validateLoginPassword);
 
-loginForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-if(!(validateLoginEmail() && validateLoginPassword())) return;
+if (loginForm) {
+  document.getElementById('login-email').addEventListener('change', validateLoginEmail);
+  document.getElementById('login-pass').addEventListener('input', validateLoginPassword);
 
-const loginData = {
-    email : loginForm.email.value.trim(),
-    password : loginForm.password.value
-}
-fetch('/login', {
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!(validateLoginEmail() && validateLoginPassword())) return;
+
+    const loginData = {
+      email: loginForm.email.value.trim(),
+      password: loginForm.password.value
+    }
+
+    fetch('/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(loginData)
     })
-   .then(res => res.json())
-  .then(data => {
-       if (data.status === "error") {
-           showAlert(data.message, "error");
-            loginForm.reset();
-           return;
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === "error") {
+          showAlert(data.message, "error");
+          loginForm.reset();
+          return;
         }
-                if(data.data.role === 'provider'){
-            window.location.href = "/admin/dash";
-            return;
-        }else{
-        window.location.href = "/";
+        if (data.data.role === 'provider' || data.data.role === 'admin') {
+          window.location.href = "/admin/dash";
+        } else {
+          window.location.href = "/";
         }
-   
-        }) .catch(err => {
+      })
+      .catch(err => {
         console.error("Fetch error:", err);
         showAlert("An error occurred while login user", "error");
-    });
-
-   
       });
-function logout(){
-  console.log("ihii");
-fetch('/logout',{
-        method: 'POST',
-        credentials: 'include'
-})
-   .then(res => res.json())
-  .then(data => {
-       if (data.status === "error") {
-           sh(data.message, "error");
-           return;
-        }
-        window.location.href = "/";
-
-   
-        }) .catch(err => {
-        console.error("logout error:", err);
-        showAlert("An error occurred while logout", "error");
-    });
+  });
 }
-  
-
-

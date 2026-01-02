@@ -60,9 +60,41 @@
   width: 300px;
   border-radius: 8px;
 }
-
-.modal-actions {
+.modal-content input{
+  margin-bottom:4px;
+}
+.avail-modal-actions {
   display: flex;
   justify-content: space-between;
   margin-top: 15px;
+}
+.date-heading{
+  display: flex;
+  align-items: center;
+  gap:10px;
+}
+.avail-modal-actions button{
+  padding:5px;
+   padding: 8px 15px;
+    border-radius: 6px;
+    border: none;
+    
+}
+.avail-modal-actions button:hover{
+      cursor: pointer;
+
+}
+.avail-modal-actions #saveDay{
+  background: #35bd57ff;
+  color: white;
+}
+.avail-modal-actions #markOff{
+  background: rgb(238, 59, 59);
+  color: white;
+}
+.avail-modal-actions #markOff:hover{
+  background: rgba(184, 15, 15);
+}
+.avail-modal-actions #saveDay:hover{
+  background: rgb(24, 151, 56);
 }

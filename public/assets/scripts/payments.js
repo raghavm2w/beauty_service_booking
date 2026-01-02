@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const paymentDetails = document.getElementById('paymentDetails');
     const errorMessage = document.getElementById('errorMessage');
     const payBtn = document.getElementById('payBtn');
+    const cancelPayBtn = document.getElementById('cancelPayBtn');
 
     if (!bookingId) {
         showAlert("Invalid Booking ID", "error");
@@ -70,6 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
             showAlert("An error occurred loading details", "error");
         });
 
+
     // Handle Payment
     payBtn.addEventListener('click', () => {
         payBtn.disabled = true;
@@ -103,8 +105,18 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     });
 
+cancelPayBtn.addEventListener('click', () => {
+      fetch('/user/cancel-booking', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ booking_id: bookingId })
+                        }).then(() => {
+                         window.location.href = '/services';
+                        return;
+                    });
+                });
+            });
 
-});
 function showAlert(message, type) {
     const alertBox = document.getElementById("custom-alert");
     alertBox.innerHTML = message;

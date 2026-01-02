@@ -60,5 +60,7 @@ $router->post('/admin/add-weekAvailability', [[AuthMiddleware::class, 'verify'],
 $router->post('/admin/update-dayAvailability', [[AuthMiddleware::class, 'verify'], [AuthMiddleware::class, 'providerOnly'], [AvailableController::class, 'updateSingleDayAvailability']]);
 $router->post('/admin/set-dayoff', [[AuthMiddleware::class, 'verify'], [AuthMiddleware::class, 'providerOnly'], [AvailableController::class, 'setDayOff']]);
 $router->post('/admin/complete-booking', [[AuthMiddleware::class, 'verify'], [AuthMiddleware::class, 'providerOnly'], [BookingController::class, 'completeBooking']]);
+$router->post('/admin/cancel-booking', [[AuthMiddleware::class, 'verify'], [AuthMiddleware::class, 'providerOnly'], [BookingController::class, 'cancelBooking']]);
+$router->get('/admin/get-today-bookings', [[AuthMiddleware::class, 'verify'], [AuthMiddleware::class, 'providerOnly'], [BookingController::class, 'getTodayBookings']]);
 
 $router->dispatch();

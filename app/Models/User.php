@@ -82,19 +82,20 @@ class User extends Model
             throw $e;
         }
     }
-    public function getValidRefreshToken()
+    public function getValidRefreshToken($userId)
     {
         try {
             $stmt = $this->db->prepare("
         SELECT rt.user_id, rt.expires_at, u.role
         FROM refresh_tokens rt
         JOIN users u ON u.id = rt.user_id
-        WHERE rt.expires_at > NOW()
+        WHERE rt.user_id = :user_id
+        AND rt.expires_at > NOW()
         ORDER BY rt.id DESC
         LIMIT 1
     ");
 
-            $stmt->execute();
+            $stmt->execute([':user_id' => $userId]);
             return $stmt->fetch(PDO::FETCH_ASSOC);
         } catch (\Exception $e) {
             throw $e;
