@@ -1,7 +1,7 @@
 <?php include __DIR__."/../partials/sidebar.php"; ?>
  <main id="content" class="main">
 
-        <div class="breadcrumb">Home > Services</div>
+        <div class="breadcrumb">Home › Services</div>
 
         <div class="page-header">
             <div class="header-info">
@@ -14,18 +14,18 @@
 
 <div id="serviceModal" class="modal">
     <form id="addServiceForm" class="service-form">
-    <input type="text" name="name" placeholder="Service name" required>
+    <input type="text" name="name" placeholder="Service name" maxlength="150" required>
 
-    <select name="category_id" id="category">
+    <select name="category_id" id="category" required>
     </select>
-    <select name="subcategory_id" id="subcategory">
+    <select name="subcategory_id" id="subcategory" required>
     </select>
 
-    <input type="number" name="duration" min="1"placeholder="Duration (minutes)" required>
+    <input type="number" name="duration" min="5" placeholder="Duration (minutes)" required>
 
     <input type="number" name="price" min="1" placeholder="Price" required>
 
-    <textarea name="description" placeholder="Description"></textarea>
+    <textarea name="description" placeholder="Description" maxlength="1500"></textarea>
 
     <button type="submit">Add Service</button>
 </form>
@@ -75,14 +75,14 @@
 <div id="editServiceModal" class="modal">
     <form id="editServiceForm" class="service-form">
     <input type="hidden" name="edit_id" id="edit_id">
-    <input type="text" id="edit-name" name="name" placeholder="Service name" required>
+    <input type="text" id="edit-name" name="name" placeholder="Service name" maxlength="150" required>
 
-    <select name="category_id"  id="edit-category">
+    <select name="category_id"  id="edit-category" required>
     </select>
-    <select name="subcategory_id" id="edit-subcategory">
+    <select name="subcategory_id" id="edit-subcategory" required>
     </select>
 
-    <input type="number" id="edit-duration" min="1" name="duration" placeholder="Duration (minutes)" required>
+    <input type="number" id="edit-duration" min="5" name="duration" placeholder="Duration (minutes)" required>
 
     <input type="number" id="edit-price" name="price"  min="1"placeholder="Price" required>
     <label>Status</label>
@@ -112,7 +112,7 @@
             <span id="paginationInfo"></span>
                 <div>
                     <button id="servicePrevBtn" >Previous</button>
-                    <button class="active" id="serviceNextBtn" >Next</button>
+                    <button id="serviceNextBtn" >Next</button>
                 </div>
             </div>
         </div>

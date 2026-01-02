@@ -20,9 +20,8 @@
       <div class="form-group">
         <div class="phone-input">
           <span class="country-code">+91</span>
-          <input id="phone" type="number" name="phone" placeholder="mobile number" required>
+          <input id="phone" type="tel" name="phone" placeholder="mobile number" pattern="[6-9][0-9]{9}" maxlength="10" required>
               <small class="error"></small>
-
         </div>
       </div>
 
@@ -32,7 +31,7 @@
           <select id="gender"name="gender">
             <option>male</option>
             <option>female</option>
-            <option>others</option>
+            <option>other</option>
 
           </select>
               <small class="error"></small>

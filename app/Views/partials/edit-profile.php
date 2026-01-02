@@ -5,13 +5,13 @@
         <form id="editProfileForm">
             <div class="form-group">
                 <label for="name">Name</label>
-                <input type="text" id="name" name="name" required minlength="3" maxlength="30">
+                <input type="text" id="name" name="name" required minlength="3" maxlength="100">
             </div>
 
             <div class="form-group">
                 <label for="phone">Phone Number</label>
-                <input type="tel" id="phone" name="phone" required pattern="[1-9][0-9]{9}"
-                    title="10 digit phone number">
+                <input type="tel" id="phone" name="phone" required pattern="[6-9][0-9]{9}"
+                    title="10 digit mobile number starting with 6-9">
             </div>
 
             <div class="form-group">

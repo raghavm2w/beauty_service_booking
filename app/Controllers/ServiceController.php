@@ -2,6 +2,7 @@
 namespace App\Controllers;
 use App\Core\Controller;
 use App\Models\Service;
+use App\Models\Available;
 
 
 class ServiceController extends Controller {
@@ -31,16 +32,14 @@ public function addService(){
         $price = filter_var($input['price'], FILTER_VALIDATE_FLOAT);
         $duration = filter_var($input['duration'], FILTER_VALIDATE_INT);
 
-        if (strlen($name) < 3 || strlen($name) > 50) {
-            error_log($name);
-            error(400, "Service name must be between 3 and 50 characters");
+        if (strlen($name) < 3 || strlen($name) > 150) {
+            error(400, "Service name must be between 3 and 150 characters");
         }
-        if (preg_match('/<script\b/i', $name)) {
-            error(400, "Invalid service name");
-        }
-        if (preg_match('/<script\b/i', $description)) {
-            error(400, "Invalid description");
-        }
+        
+        // Sanitize inputs
+        $name = htmlspecialchars(strip_tags($name), ENT_QUOTES, 'UTF-8');
+        $description = htmlspecialchars(strip_tags($description), ENT_QUOTES, 'UTF-8');
+
         if ($price === false || $price <= 0 || $price > 1000000) {
             error(400, "Invalid price value");
         }
@@ -48,9 +47,11 @@ public function addService(){
         if ($duration === false || $duration < 5 || $duration > 1440) {
             error(400, "Duration must be valid number between 5 and 1440 minutes");
         }
+        if($description){
         if (strlen($description) > 1500) {
             error(400, "Description must not exceed 1500 characters");
         }
+    }
         // Category integrity check
         if (!$this->service->isValidCategoryPair($category_id, $subcategory_id)) {
             error(400, "Invalid category or subcategory");
@@ -138,16 +139,14 @@ public function editService(){
         if (!in_array($service_status, [0, 1])) {
             error(400, "Invalid service status.");
         }
-        if (strlen($name) < 3 || strlen($name) > 50) {
-            error_log($name);
-            error(400, "Service name must be between 3 and 50 characters");
+        if (strlen($name) < 3 || strlen($name) > 150) {
+            error(400, "Service name must be between 3 and 150 characters");
         }
-        if (preg_match('/<script\b/i', $name)) {
-            error(400, "Invalid service name");
-        }
-        if (preg_match('/<script\b/i', $description)) {
-            error(400, "Invalid description");
-        }
+
+        // Sanitize inputs
+        $name = htmlspecialchars(strip_tags($name), ENT_QUOTES, 'UTF-8');
+        $description = $description ? htmlspecialchars(strip_tags($description), ENT_QUOTES, 'UTF-8') : null;
+
         if ($price === false || $price <= 0 || $price > 1000000) {
             error(400, "Invalid price value");
         }
@@ -155,8 +154,11 @@ public function editService(){
         if ($duration === false || $duration < 5 || $duration > 1440) {
             error(400, "Duration must be valid number between 5 and 1440 minutes");
         }
-        if (strlen($description) > 1500) {
-            error(400, "Description must not exceed 1500 characters");
+        
+        if ($description) {
+            if (strlen($description) > 1500) {
+                error(400, "Description must not exceed 1500 characters");
+            }
         }
         // Category integrity check
         if (!$this->service->isValidCategoryPair($category_id, $subcategory_id)) {

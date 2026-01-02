@@ -28,12 +28,74 @@ class AvailableController extends Controller {
             }
 
             $timezone = $this->avail->getTimezone($provider_id);
+            
+            // Store original time values for booking comparison (before UTC conversion)
+            $originalStartTime = $availability['start_time']; // e.g., "09:00"
+            $originalEndTime = $availability['end_time'];     // e.g., "17:00"
+            
             $dummyDate = '1970-01-01';
         $startUTC = convertToUTC($dummyDate, $availability['start_time'], $timezone);
         $endUTC   = convertToUTC($dummyDate, $availability['end_time'], $timezone);
             error_log($startUTC);
         $availability['start_time'] = $startUTC;
         $availability['end_time']   = $endUTC;
+        
+        // Check for future confirmed bookings that would be affected
+        // Weekly availability applies to all future dates, so we need to check from tomorrow onwards
+        $tz = new \DateTimeZone($timezone ?: 'UTC');
+        $tomorrow = new \DateTime('tomorrow', $tz);
+        $tomorrowStr = $tomorrow->format('Y-m-d');
+        
+        // Check next 90 days for potential conflicts
+        $futureDate = clone $tomorrow;
+        $futureDate->modify('+90 days');
+        $futureDateStr = $futureDate->format('Y-m-d');
+        
+        $bookingModel = new \App\Models\Booking();
+        
+        // We need to check each day of the week for bookings
+        $tomorrowStartUTC = convertToUTC($tomorrowStr, '00:00', $timezone);
+        $futureEndUTC = convertToUTC($futureDateStr, '23:59', $timezone);
+        
+        $allFutureBookings = $bookingModel->hasConfirmedBookingsInTimeRange(
+            $provider_id,
+            $tomorrowStartUTC,
+            $futureEndUTC
+        );
+        
+        if (!empty($allFutureBookings)) {
+            // Check if any bookings fall outside the new weekly availability window
+            $conflictingBookings = [];
+            
+            // Use the original time values (before UTC conversion) for comparison
+            $newStartTime = substr($originalStartTime, 0, 5); // "HH:MM" format
+            $newEndTime = substr($originalEndTime, 0, 5);     // "HH:MM" format
+            
+            foreach ($allFutureBookings as $booking) {
+                // Convert booking times to provider timezone
+                $bookingStartLocal = convertFromUTC($booking['start_time'], $timezone);
+                $bookingEndLocal = convertFromUTC($booking['end_time'], $timezone);
+                
+                // Extract just the time portion (HH:MM format)
+                $bookingStartTime = substr($bookingStartLocal, 11, 5); // "HH:MM"
+                $bookingEndTime = substr($bookingEndLocal, 11, 5);     // "HH:MM"
+                
+                // Compare times (string comparison works for HH:MM format)
+                if ($bookingStartTime < $newStartTime || $bookingEndTime > $newEndTime) {
+                    $conflictingBookings[] = [
+                        'date' => substr($bookingStartLocal, 0, 10),
+                        'customer' => $booking['customer_name'],
+                        'service' => $booking['service_name'],
+                        'time' => $bookingStartTime . ' - ' . $bookingEndTime
+                    ];
+                }
+            }
+            
+            if (!empty($conflictingBookings)) {
+                error(409, "Cannot change weekly availability. You have confirmed bookings that fall outside the new time range. Please cancel these bookings first ");
+            }
+        }
+        
         $result = $this->avail->setWeeklyAvailability($provider_id, $availability);
         if(!$result){
             error(500,"An error occurred while saving availability");   
@@ -74,7 +136,6 @@ class AvailableController extends Controller {
         // If updating for today, check against current time
         if ($selectedDate == $todayDateOnly) {
             $currentTime = $today->format('H:i');
-            // Assuming start_time is "HH:mm" or "HH:mm:ss"
             if ($startTime < $currentTime) {
                 error(400, "Start time cannot be in the past for today");
             }
@@ -88,8 +149,42 @@ class AvailableController extends Controller {
             error(400, "End time must be after start time");
         }
         
+        // Check for confirmed bookings that would conflict
         $startUTC = convertToUTC($date, $startTime, $timezone);
         $endUTC   = convertToUTC($date, $endTime, $timezone);
+        
+        // Check for bookings on this entire day
+        $dayStartUTC = convertToUTC($date, '00:00', $timezone);
+        $dayEndUTC = convertToUTC($date, '23:59', $timezone);
+        
+        $bookingModel = new \App\Models\Booking();
+        $conflictingBookings = $bookingModel->hasConfirmedBookingsInTimeRange(
+            $provider_id,
+            $dayStartUTC,
+            $dayEndUTC
+        );
+        
+        if (!empty($conflictingBookings)) {
+            // Check if any bookings fall outside the new availability window
+            foreach ($conflictingBookings as $booking) {
+                $bookingStart = $booking['start_time'];
+                $bookingEnd = $booking['end_time'];
+                
+                // If booking is outside the new time range, it's a conflict
+                if ($bookingStart < $startUTC || $bookingEnd > $endUTC) {
+                    $bookingDetails = [];
+                    foreach ($conflictingBookings as $b) {
+                        $bookingDetails[] = [
+                            'customer' => $b['customer_name'],
+                            'service' => $b['service_name'],
+                            'time' => convertFromUTC($b['start_time'], $timezone) . ' - ' . convertFromUTC($b['end_time'], $timezone)
+                        ];
+                    }
+                    error(409, "Cannot change availability. You have confirmed bookings on this day. Please cancel these bookings first" );
+                }
+            }
+        }
+        
         $result = $this->avail->setSingleDayAvailability($provider_id, $startUTC, $endUTC, $date);
         if(!$result){
             error(500,"An error occurred while saving single day availability");   
@@ -156,6 +251,31 @@ class AvailableController extends Controller {
         if($dayOfWeek <0 || $dayOfWeek >6){
             error(400,"Invalid day of week");
         }
+        
+        // Check for confirmed bookings on this date
+        $timezone = $this->avail->getTimezone($provider_id);
+        $dayStartUTC = convertToUTC($date, '00:00', $timezone);
+        $dayEndUTC = convertToUTC($date, '23:59', $timezone);
+        
+        $bookingModel = new \App\Models\Booking();
+        $conflictingBookings = $bookingModel->hasConfirmedBookingsInTimeRange(
+            $provider_id,
+            $dayStartUTC,
+            $dayEndUTC
+        );
+        
+        if (!empty($conflictingBookings)) {
+            $bookingDetails = [];
+            foreach ($conflictingBookings as $b) {
+                $bookingDetails[] = [
+                    'customer' => $b['customer_name'],
+                    'service' => $b['service_name'],
+                    'time' => convertFromUTC($b['start_time'], $timezone) . ' - ' . convertFromUTC($b['end_time'], $timezone)
+                ];
+            }
+            error(409, "Cannot set day off. You have confirmed bookings on this day. Please cancel these bookings first " );
+        }
+        
         $result = $this->avail->setDayOff($provider_id, $date);
         if(!$result){
             error(500,"An error occurred while marking day off");   

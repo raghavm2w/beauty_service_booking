@@ -20,7 +20,6 @@
         <div class="slots-grid" id="slotsGrid"></div>
       </div>
 
-      <!-- Actions -->
       <div class="actions">
         <button class="confirm" id="confirmBooking" disabled>
           Confirm Booking

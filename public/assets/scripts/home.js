@@ -1,5 +1,7 @@
 const homeSuggestions = document.getElementById("homeSuggestions");
 const homeSearchInput = document.getElementById("homeSearch");
+let searchTimeout = null;
+
 homeSearchInput.addEventListener("input", () => {
     const query = homeSearchInput.value.trim();
 
@@ -10,9 +12,10 @@ homeSearchInput.addEventListener("input", () => {
         return;
     }
 
-    searchTimeout = setTimeout(() => {
+     searchTimeout = setTimeout(() => {
         fetchHomeSuggestions(query);
     }, 300);
+
 });
 
 //fetching autosuggestion when search in home

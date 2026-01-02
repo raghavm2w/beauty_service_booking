@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     let currentPage = 1;
-    const limit = 10;
+    const limit = 8;
 
     // Elements
     const tableBody = document.getElementById('bookingsTableBody');

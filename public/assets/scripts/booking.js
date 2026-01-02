@@ -144,7 +144,7 @@ confirmBtn.onclick = () => {
     .then(res => res.json())
     .then(data => {
       if (data.status === 'success') {
-        showAlert("Booking confirmed! Redirecting to payment...", "success");
+        showAlert(" Redirecting to payment...", "success");
         bookingModal.classList.remove("active");
         setTimeout(() => {
           window.location.href = `/payments?booking_id=${data.data.booking_id}`;

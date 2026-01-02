@@ -139,7 +139,7 @@ class Booking extends Model
         }
     }
 
-    public function getUserBookings(int $userId, string $filter)
+    public function getUserBookings(int $userId, string $filter, int $limit, int $offset)
     {
         try {
             $sql = "
@@ -158,13 +158,19 @@ class Booking extends Model
             } elseif ($filter === 'cancelled') {
                 $sql .= " AND b.status = 3 ORDER BY b.created_at DESC";
             } elseif ($filter === 'completed') {
-                $sql .= " AND b.status = 2 AND b.start_time < NOW() ORDER BY b.start_time DESC";
+                $sql .= " AND (b.status = 2 OR (b.status = 1 AND b.start_time < NOW())) ORDER BY b.start_time DESC";
             } else {
                 $sql .= " ORDER BY b.created_at DESC";
             }
 
+            $sql .= " LIMIT :limit OFFSET :offset";
+
             $stmt = $this->db->prepare($sql);
-            $stmt->execute([':user_id' => $userId]);
+            $stmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
+            $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+            $stmt->execute();
+            
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (\Exception $e) {
             throw $e;
@@ -234,6 +240,111 @@ class Booking extends Model
 
             return ['bookings' => $bookings, 'total' => $total];
 
+        } catch (\Exception $e) {
+            throw $e;
+        }
+    }
+
+    public function getDashboardStats(int $providerId)
+    {
+        try {
+            $stats = [];
+
+            $stmt = $this->db->prepare("
+                SELECT COUNT(*) as count 
+                FROM bookings 
+                WHERE provider_id = :provider_id 
+                AND DATE(start_time) = CURDATE() 
+                AND status != 3
+            ");
+            $stmt->execute([':provider_id' => $providerId]);
+            $stats['today_bookings'] = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
+
+            // Upcoming Bookings (status = confirmed (1), start_time > NOW())
+            $stmt = $this->db->prepare("
+                SELECT COUNT(*) as count 
+                FROM bookings 
+                WHERE provider_id = :provider_id 
+                AND status = 1 
+                AND start_time > NOW()
+            ");
+            $stmt->execute([':provider_id' => $providerId]);
+            $stats['upcoming_bookings'] = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
+
+            //  Total Revenue This Month(status = 2)
+            $stmt = $this->db->prepare("
+                SELECT SUM(s.price) as total_revenue
+                FROM bookings b
+                JOIN services s ON b.service_id = s.id
+                WHERE b.provider_id = :provider_id
+                AND b.status = 2
+                AND MONTH(b.start_time) = MONTH(CURDATE())
+                AND YEAR(b.start_time) = YEAR(CURDATE())
+            ");
+            $stmt->execute([':provider_id' => $providerId]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            $stats['month_revenue'] = $result['total_revenue'] ? $result['total_revenue'] : 0;
+
+            return $stats;
+
+        } catch (\Exception $e) {
+            throw $e;
+        }
+    }
+
+    public function getTodayBookings(int $providerId)
+    {
+        try {
+            $stmt = $this->db->prepare("
+                SELECT 
+                    b.id,
+                    b.start_time,
+                    b.end_time,
+                    b.status,
+                    s.name as service_name,
+                    s.price,
+                    s.duration,
+                    u.name as customer_name
+                FROM bookings b
+                JOIN services s ON b.service_id = s.id
+                JOIN users u ON b.user_id = u.id
+                WHERE b.provider_id = :provider_id 
+                AND DATE(b.start_time) = CURDATE() 
+                AND b.status IN (1, 2)
+                ORDER BY b.start_time ASC
+            ");
+            $stmt->execute([':provider_id' => $providerId]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (\Exception $e) {
+            throw $e;
+        }
+    }
+
+    public function hasConfirmedBookingsInTimeRange(int $providerId, string $startDateTime, string $endDateTime)
+    {
+        try {
+            $stmt = $this->db->prepare("
+                SELECT 
+                    b.id,
+                    b.start_time,
+                    b.end_time,
+                    s.name as service_name,
+                    u.name as customer_name
+                FROM bookings b
+                JOIN services s ON b.service_id = s.id
+                JOIN users u ON b.user_id = u.id
+                WHERE b.provider_id = :provider_id 
+                AND b.status = 1
+                AND b.start_time < :end_time
+                AND b.end_time > :start_time
+                ORDER BY b.start_time ASC
+            ");
+            $stmt->execute([
+                ':provider_id' => $providerId,
+                ':start_time' => $startDateTime,
+                ':end_time' => $endDateTime
+            ]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (\Exception $e) {
             throw $e;
         }

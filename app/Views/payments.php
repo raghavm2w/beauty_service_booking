@@ -44,6 +44,8 @@
         </div>
 
         <button id="payBtn" class="pay-btn">Confirm and Pay</button>
+        <button id="cancelPayBtn" class="pay-btn">Cancel Payment</button>
+
       </div>
     <div id="custom-alert" class="alert-box"></div>
     </div>

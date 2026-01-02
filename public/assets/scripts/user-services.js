@@ -13,7 +13,7 @@ const searchInput = document.getElementById("searchInput");
 const suggestionsBox = document.getElementById("searchSuggestions");
 const clearBtn = document.getElementById("clearBtn");
 
-let searchTimeout = null;
+let searchservicesTimeout = null;
 const params = new URLSearchParams(window.location.search);
 const searchQuery = params.get("search");
 
@@ -214,14 +214,14 @@ function clearSubcategories() {
 searchInput.addEventListener("input", () => {
     const query = searchInput.value.trim();
 
-    clearTimeout(searchTimeout);
+    clearTimeout(searchservicesTimeout);
 
     if (query.length < 2) {
         hideSuggestions();
         return;
     }
 
-    searchTimeout = setTimeout(() => {
+    searchservicesTimeout = setTimeout(() => {
         fetchSearchSuggestions(query);
     }, 300);
 });
