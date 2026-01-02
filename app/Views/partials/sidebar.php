@@ -6,7 +6,6 @@
     <title>admin</title>
       <link rel="stylesheet" href="/assets/styles/app.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.css"/> -->
 </head>
 <body>
 
@@ -15,10 +14,9 @@
     <!-- Sidebar -->
     <aside class="sidebar">
         <div class="profile">
-            <div class=profile-logo><i class="fa-solid fa-circle-user"></i></div>
+            <!-- <div class=profile-logo><i class="fa-solid fa-circle-user"></i></div> -->
             <div>
-                <h4>ServiceAdmin</h4>
-                <span>Service Provider</span>
+                <h4>Admin Panel</h4>
             </div>
         </div>
 
@@ -30,6 +28,8 @@
             <a  class="<?= str_contains($currentPage, 'settings') ? 'active' : '' ?> " href="#" onclick="toggleSettings()">Settings</a>
             <div class="settings" >
             <a href="#" onclick="openTime()" >Timezone</a>
+            <a href="/admin/profile" >Edit Profile</a>
+
             </div>
         </nav>
   <div id="timeOverlay" class="modal-overlay" onclick="closeTimeForm()"> </div>

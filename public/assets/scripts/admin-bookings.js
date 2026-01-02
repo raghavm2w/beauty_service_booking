@@ -4,8 +4,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Elements
     const tableBody = document.getElementById('bookingsTableBody');
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
+    const prevBtn = document.getElementById('prevBookingsBtn');
+    const nextBtn = document.getElementById('nextBookingsBtn');
     const paginationInfo = document.getElementById('paginationInfo');
     const searchInput = document.getElementById('searchBookings');
     const statusFilter = document.getElementById('statusFilter');
@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
         fetch(url)
             .then(res => res.json())
             .then(res => {
-                if (res.status === 200) {
+                if (res.status === "success") {
                     renderTable(res.data.bookings);
                     updatePagination(res.data.total);
                 } else {
@@ -80,10 +80,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>$${booking.price}</td>
                 <td><span class="status-badge status-${getStatusString(booking.status, booking.start_time)}">${getStatusLabel(booking.status, booking.start_time)}</span></td>
                 <td>
-                    <!-- Actions could go here, e.g., Cancel if pending/confirmed -->
                    ${(booking.status == 0 || booking.status == 1) ?
                 `<button class="btn-cancel-sm" onclick="cancelBooking(${booking.id})">Cancel</button>` :
-                '-'
+                ''
+            }
+            ${(booking.status == 1) ?
+                `<button class="btn-complete-sm" onclick="completeBooking(${booking.id})">Complete</button>` :
+                ''
             }
                 </td>
             </tr>
@@ -116,12 +119,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function getStatusString(status, startTime) {
-        // 0: pending, 1: confirmed, 3: cancelled
-        // If status 1 and startTime < now => completed (logic specific to frontend display preference)
+        // 0: pending, 1: confirmed, 2: completed, 3: cancelled
+        if (status == 2) return 'completed';
         if (status == 3) return 'cancelled';
         if (status == 0) return 'pending';
         if (status == 1) {
-            if (new Date(startTime.replace(" ", "T")) < new Date()) return 'completed';
+            // if (new Date(startTime.replace(" ", "T")) < new Date()) return 'completed';
             return 'confirmed';
         }
         return 'unknown';
@@ -144,23 +147,39 @@ document.addEventListener('DOMContentLoaded', () => {
     window.cancelBooking = function (id) {
         if (!confirm('Are you sure you want to cancel this booking?')) return;
 
-        fetch('/user/cancel-booking', { // Using same endpoint as user side? or create admin one? Reusing user logic seems fine if Auth allows provider.
-            // Wait, `/user/cancel-booking` maps to `BookingController::cancelBooking` which uses `AuthMiddleware::verify`.
-            // Controller `cancelBooking` uses `this->book->cancelBooking`.
-            // Does it check user ownership? `cancelBooking` query: `WHERE id = :id AND (status = 0 OR status = 1)`.
-            // It doesn't check `user_id` or `provider_id`. So it's generic.
-            // Ideally we should restrict, but for now it works for admin too.
+        fetch('/user/cancel-booking', {
+         
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ booking_id: id })
         })
             .then(res => res.json())
             .then(res => {
-                if (res.status === 200) {
+                if (res.status === "success") {
                     showAlert('Booking cancelled', 'success');
                     fetchBookings();
                 } else {
                     showAlert(res.message || 'Failed to cancel', 'error');
+                }
+            });
+    };
+
+    // Global complete function
+    window.completeBooking = function (id) {
+        if (!confirm('Are you sure you want to mark this booking as completed?')) return;
+
+        fetch('/admin/complete-booking', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ booking_id: id })
+        })
+            .then(res => res.json())
+            .then(res => {
+                if (res.status === "success") {
+                    showAlert('Booking completed', 'success');
+                    fetchBookings();
+                } else {
+                    showAlert(res.message || 'Failed to complete booking', 'error');
                 }
             });
     };

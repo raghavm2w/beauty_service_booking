@@ -3,8 +3,9 @@ namespace App\Models;
 use App\Core\Model;
 use PDO;
 
-class Booking extends Model{
-    
+class Booking extends Model
+{
+
     public function createBooking(array $data)
     {
         try {
@@ -22,7 +23,7 @@ class Booking extends Model{
                 )
                 FOR UPDATE
             ");
-            
+
             $stmt->execute([
                 ':provider_id' => $data['provider_id'],
                 ':start_time' => $data['start_time'],
@@ -93,7 +94,7 @@ class Booking extends Model{
                 AND created_at < (NOW() - INTERVAL 5 MINUTE)
             ");
             $stmt->execute([':id' => $bookingId]);
-            
+
             if ($stmt->fetch()) {
                 // Expired
                 $this->db->prepare("UPDATE bookings SET status = 3 WHERE id = ?")->execute([$bookingId]);
@@ -124,6 +125,20 @@ class Booking extends Model{
         }
     }
 
+    public function completeBooking(int $bookingId)
+    {
+        try {
+            $stmt = $this->db->prepare("
+                UPDATE bookings 
+                SET status = 2 
+                WHERE id = :id AND (status = 1)
+            "); // Ensure only confirmed bookings can be completed
+            return $stmt->execute([':id' => $bookingId]);
+        } catch (\Exception $e) {
+            throw $e;
+        }
+    }
+
     public function getUserBookings(int $userId, string $filter)
     {
         try {
@@ -143,7 +158,7 @@ class Booking extends Model{
             } elseif ($filter === 'cancelled') {
                 $sql .= " AND b.status = 3 ORDER BY b.created_at DESC";
             } elseif ($filter === 'completed') {
-                 $sql .= " AND b.status = 1 AND b.start_time < NOW() ORDER BY b.start_time DESC";
+                $sql .= " AND b.status = 2 AND b.start_time < NOW() ORDER BY b.start_time DESC";
             } else {
                 $sql .= " ORDER BY b.created_at DESC";
             }
@@ -170,11 +185,11 @@ class Booking extends Model{
                     $conditions[] = "b.status = 1";
                 } elseif ($filters['status'] === 'cancelled') {
                     $conditions[] = "b.status = 3";
-                } elseif ($filters['status'] === 'completed') { 
-                     $conditions[] = "b.status = 1 AND b.end_time < NOW()";
+                } elseif ($filters['status'] === 'completed') {
+                    $conditions[] = "b.status = 2";
                 }
             }
-            
+
             if (!empty($filters['search'])) {
                 $conditions[] = "(u.name LIKE :search OR s.name LIKE :search)";
                 $params[':search'] = "%" . $filters['search'] . "%";
@@ -207,7 +222,7 @@ class Booking extends Model{
                 ORDER BY b.created_at DESC
                 LIMIT :limit OFFSET :offset
             ";
-            
+
             $stmt = $this->db->prepare($sql);
             foreach ($params as $key => $val) {
                 $stmt->bindValue($key, $val);

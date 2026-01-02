@@ -135,6 +135,23 @@ tr:hover {
     color: #fff;
 }
 
+.btn-complete-sm {
+    padding: 4px 8px;
+    font-size: 0.8rem;
+    color: #2f54eb;
+    border: 1px solid #2f54eb;
+    border-radius: 4px;
+    background: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-left: 5px;
+}
+
+.btn-complete-sm:hover {
+    background: #2f54eb;
+    color: #fff;
+}
+
 .text-center {
     text-align: center;
 }
