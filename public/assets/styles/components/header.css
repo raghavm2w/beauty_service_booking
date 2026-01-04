@@ -84,7 +84,8 @@
   transition: background-color 0.2s;
   font-size: 0.95rem;
 }
-.header-actions a:hover{
-   background-color: #f8f9fa;
+
+.header-actions a:hover {
+  background-color: #f8f9fa;
   color: #ff2e88;
 }

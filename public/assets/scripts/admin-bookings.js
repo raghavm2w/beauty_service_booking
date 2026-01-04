@@ -80,14 +80,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>$${booking.price}</td>
                 <td><span class="status-badge status-${getStatusString(booking.status, booking.start_time)}">${getStatusLabel(booking.status, booking.start_time)}</span></td>
                 <td>
+                <div class="action-buttons">
                    ${(booking.status == 0 || booking.status == 1) ?
-                `<button class="btn-cancel-sm" onclick="cancelBooking(${booking.id})">Cancel</button>` :
+                `<button class="btn-icon cancel" title="Cancel Booking" onclick="cancelBooking(${booking.id})"><i class="fa-solid fa-xmark"></i></button>` :
                 ''
             }
             ${(booking.status == 1) ?
-                `<button class="btn-complete-sm" onclick="completeBooking(${booking.id})">Complete</button>` :
+                `<button class="btn-icon complete" title="Complete Booking" onclick="completeBooking(${booking.id})"><i class="fa-solid fa-check"></i></button>` :
                 ''
             }
+                </div>
                 </td>
             </tr>
         `).join('');

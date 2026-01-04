@@ -6,6 +6,7 @@ use App\Middlewares\AuthMiddleware;
 use App\Controllers\ServiceController;
 use App\Controllers\AvailableController;
 use App\Controllers\BookingController;
+use App\Controllers\ContactController;
 
 $router = new Router();
 
@@ -16,6 +17,10 @@ $router->get('/services', [ViewController::class, 'userServices']);
 $router->get('/bookings', [ViewController::class, 'userBookings']);
 
 $router->get('/payments', [[AuthMiddleware::class, 'verify'], [ViewController::class, 'payments']]);
+
+$router->get('/about', [ViewController::class, 'about']);
+$router->get('/contact', [ViewController::class, 'contact']);
+$router->post('/contact/submit', [ContactController::class, 'submit']);
 
 $router->post('/register', [AuthController::class, 'register']);
 $router->post('/login', [AuthController::class, 'login']);
@@ -39,7 +44,7 @@ $router->get('/admin/services', [[AuthMiddleware::class, 'verify'], [AuthMiddlew
 $router->get('/admin/dash', [[AuthMiddleware::class, 'verify'], [AuthMiddleware::class, 'providerOnly'], [ViewController::class, 'adminDash']]);
 $router->get('/admin/avail', [[AuthMiddleware::class, 'verify'], [AuthMiddleware::class, 'providerOnly'], [ViewController::class, 'adminAvail']]);
 $router->get('/admin/bookings', [[AuthMiddleware::class, 'verify'], [AuthMiddleware::class, 'providerOnly'], [ViewController::class, 'adminBookings']]);
-$router->get('/admin/profile', [[AuthMiddleware::class,'verify'], [AuthMiddleware::class, 'providerOnly'], [ViewController::class, 'adminProfile']]);
+$router->get('/admin/profile', [[AuthMiddleware::class, 'verify'], [AuthMiddleware::class, 'providerOnly'], [ViewController::class, 'adminProfile']]);
 $router->get('/admin/fetch-bookings', [[AuthMiddleware::class, 'verify'], [AuthMiddleware::class, 'providerOnly'], [BookingController::class, 'fetchProviderBookings']]);
 $router->get('/admin/categories', [ServiceController::class, 'fetchCategories']);
 $router->get('/admin/subcategories', [ServiceController::class, 'fetchSubcategories']);
@@ -52,8 +57,8 @@ $router->post('/admin/set-timezone', [[AuthMiddleware::class, 'verify'], [AuthMi
 $router->post('/admin/add-service', [[AuthMiddleware::class, 'verify'], [AuthMiddleware::class, 'providerOnly'], [ServiceController::class, 'addService']]);
 $router->post('/admin/edit-service', [[AuthMiddleware::class, 'verify'], [AuthMiddleware::class, 'providerOnly'], [ServiceController::class, 'editService']]);
 $router->post('/admin/delete-service', [[AuthMiddleware::class, 'verify'], [AuthMiddleware::class, 'providerOnly'], [ServiceController::class, 'deleteService']]);
-$router->get('/admin/get-profile', [[AuthMiddleware::class, 'verify'],[AuthMiddleware::class, 'providerOnly'], [AuthController::class, 'getUser']]);
-$router->post('/admin/profile-update', [[AuthMiddleware::class, 'verify'],[AuthMiddleware::class, 'providerOnly'], [AuthController::class, 'updateProfile']]);
+$router->get('/admin/get-profile', [[AuthMiddleware::class, 'verify'], [AuthMiddleware::class, 'providerOnly'], [AuthController::class, 'getUser']]);
+$router->post('/admin/profile-update', [[AuthMiddleware::class, 'verify'], [AuthMiddleware::class, 'providerOnly'], [AuthController::class, 'updateProfile']]);
 
 
 $router->post('/admin/add-weekAvailability', [[AuthMiddleware::class, 'verify'], [AuthMiddleware::class, 'providerOnly'], [AvailableController::class, 'addWeeklyAvailability']]);

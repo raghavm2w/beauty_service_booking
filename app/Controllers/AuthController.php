@@ -94,10 +94,20 @@ class AuthController extends Controller
                 'httponly' => true,
                 'samesite' => 'Strict'
             ];
+
             setcookie(
                 "access_token",
                 $accessToken,
                 $cookieRules
+            );
+
+            $refreshCookieRules = $cookieRules;
+            $refreshCookieRules['expires'] = time() + (60 * 60 * 24 * 7); // 7 days example, or match config
+
+            setcookie(
+                "refresh_token",
+                $result['refresh_token'],
+                $refreshCookieRules
             );
 
             success(201, "Registration successful", ["user_id" => $userId, "role" => $role]);
@@ -148,10 +158,20 @@ class AuthController extends Controller
                     'httponly' => true,
                     'samesite' => 'Strict'
                 ];
+
                 setcookie(
                     "access_token",
                     $accessToken,
                     $cookieRules
+                );
+
+                $refreshCookieRules = $cookieRules;
+                $refreshCookieRules['expires'] = time() + (60 * 60 * 24 * 7); // 7 days
+
+                setcookie(
+                    "refresh_token",
+                    $refreshData['token'],
+                    $refreshCookieRules
                 );
                 success(200, "Login successful", ["user_id" => $user['id'], "role" => $role]);
             } else {
@@ -183,7 +203,16 @@ class AuthController extends Controller
             $userId = $decoded->sub;
             $this->user->deleteRefreshToken($userId);
 
+
             setcookie("access_token", "", [
+                'expires' => time() - 3600,
+                'path' => '/',
+                'secure' => isset($_SERVER['HTTPS']),
+                'httponly' => true,
+                'samesite' => 'Strict'
+            ]);
+
+            setcookie("refresh_token", "", [
                 'expires' => time() - 3600,
                 'path' => '/',
                 'secure' => isset($_SERVER['HTTPS']),

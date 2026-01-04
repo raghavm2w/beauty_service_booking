@@ -47,7 +47,8 @@ class User extends Model
             $this->db->commit();
             return [
                 'user_id' => $userId,
-                'access_token' => $accessToken
+                'access_token' => $accessToken,
+                'refresh_token' => $refreshData['token']
             ];
 
         } catch (\Exception $e) {
@@ -145,13 +146,26 @@ class User extends Model
             }
 
             if (empty($fields)) {
-                return true; 
+                return true;
             }
 
             $sql = "UPDATE users SET " . implode(', ', $fields) . " WHERE id = :id";
             $stmt = $this->db->prepare($sql);
             return $stmt->execute($params);
 
+        } catch (\Exception $e) {
+            throw $e;
+        }
+    }
+    public function createContact($name, $email, $message)
+    {
+        try {
+            $stmt = $this->db->prepare("INSERT INTO contact_us (name, email, message) VALUES (:name, :email, :message)");
+            return $stmt->execute([
+                'name' => $name,
+                'email' => $email,
+                'message' => $message
+            ]);
         } catch (\Exception $e) {
             throw $e;
         }

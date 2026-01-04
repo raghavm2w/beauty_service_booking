@@ -189,3 +189,40 @@ tr:hover {
         opacity: 1;
     }
 }
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.875rem;
+}
+
+.btn-icon.complete {
+    background: #f0fdf4;
+    color: #16a34a;
+}
+
+.btn-icon.complete:hover {
+    background: #dcfce7;
+}
+
+.btn-icon.cancel {
+    background: #fef2f2;
+    color: #ef4444;
+}
+
+.btn-icon.cancel:hover {
+    background: #fee2e2;
+}

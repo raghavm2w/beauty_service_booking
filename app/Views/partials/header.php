@@ -39,8 +39,6 @@ $auth = AuthMiddleware::checkAuth();
         <?php else: ?>
           <a href="/login" class="header-link">Login</a>
         <?php endif; ?>
-
-
       </nav>
     </div>
   </header>
