@@ -153,12 +153,14 @@ td small {
 /* Modal wrapper */
 .modal {
     position: fixed;
-    top: 15%;
+    top: 50%;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translate(-50%, -50%);
     z-index: 1001;
     display: none;
     min-width: 500px;
+    max-height: 85vh;
+    overflow-y: auto;
 }
 
 .modal .service-form {

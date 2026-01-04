@@ -20,7 +20,15 @@ class ViewController extends Controller
     {
         return view("login");
     }
-   
+    public function about()
+    {
+        return view("about");
+    }
+    public function contact()
+    {
+        return view("contact");
+    }
+
     public function adminServices()
     {
         return view("admin.services");
@@ -30,7 +38,7 @@ class ViewController extends Controller
         $bookingModel = new Booking();
         $serviceModel = new Service();
         $userModel = new User();
-        
+
         $providerId = $_REQUEST['auth_user']['id'];
         $user = $userModel->findById($providerId);
         $stats = $bookingModel->getDashboardStats($providerId);
@@ -38,7 +46,7 @@ class ViewController extends Controller
         $todayBookings = $bookingModel->getTodayBookings($providerId);
 
         return view("admin.dash", [
-            'user'=>$user,
+            'user' => $user,
             'stats' => $stats,
             'totalServices' => $totalServices,
             'todayBookings' => $todayBookings

@@ -4,21 +4,23 @@
   flex-direction: column;
   align-items: center;
   padding: 40px 0;
-  margin-top: 60px; 
-     /* height: calc(100vh - 70px); */
-     min-height: 70vh;
-     margin-bottom:15px;
+  margin-top: 60px;
+  /* height: calc(100vh - 70px); */
+  min-height: 70vh;
+  margin-bottom: 15px;
 }
-.auth-page h1{
-  padding:5px;
-  margin-bottom:4px;
+
+.auth-page h1 {
+  padding: 5px;
+  margin-bottom: 4px;
 }
+
 .auth-card {
   background: #fff;
   padding: 20px;
   width: 360px;
   border-radius: 10px;
-  box-shadow: 0 10px 25px rgba(0,0,0,.08);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, .08);
 }
 
 .form-row {
@@ -36,9 +38,11 @@
   border: 1px solid var(--border);
   border-right: none;
 }
-.auth-link{
-    margin-top:10px;
+
+.auth-link {
+  margin-top: 10px;
 }
+
 .error {
   color: #dc2626;
   font-size: 0.8rem;
