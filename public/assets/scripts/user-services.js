@@ -176,7 +176,7 @@ function renderServices(services) {
             <h3>${service.name}</h3>
             <div class="service-meta">
                 <span>⏱ ${service.duration} min</span>
-                <span>₹${service.price}</span>
+                <span><i class="fa-solid fa-indian-rupee-sign"></i> ${service.price}</span>
             </div>
             <p class="desc">${service.description}</p>
 

@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     let currentPage = 1;
     const limit = 8;
+    let sortBy = 'created_at';
+    let sortOrder = 'desc';
 
     // Elements
     const tableBody = document.getElementById('bookingsTableBody');
@@ -9,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const paginationInfo = document.getElementById('paginationInfo');
     const searchInput = document.getElementById('searchBookings');
     const statusFilter = document.getElementById('statusFilter');
+    const headers = document.querySelectorAll('th[data-sort]');
 
     // Initial Load
     fetchBookings();
@@ -36,10 +39,27 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchBookings();
     });
 
+    // Sorting
+    headers.forEach(header => {
+        header.addEventListener('click', () => {
+            const column = header.dataset.sort;
+
+            if (sortBy === column) {
+                sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+            } else {
+                sortBy = column;
+                sortOrder = 'asc';
+            }
+
+            currentPage = 1;
+            fetchBookings();
+        });
+    });
+
     function fetchBookings() {
         const query = searchInput.value;
         const status = statusFilter.value;
-        const url = `/admin/fetch-bookings?page=${currentPage}&limit=${limit}&search=${encodeURIComponent(query)}&status=${status}`;
+        const url = `/admin/fetch-bookings?page=${currentPage}&limit=${limit}&search=${encodeURIComponent(query)}&status=${status}&sort=${sortBy}&order=${sortOrder}`;
 
         tableBody.innerHTML = '<tr><td colspan="8" class="text-center">Loading...</td></tr>';
 
@@ -150,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!confirm('Are you sure you want to cancel this booking?')) return;
 
         fetch('/user/cancel-booking', {
-         
+
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ booking_id: id })

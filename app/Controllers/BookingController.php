@@ -221,8 +221,10 @@ class BookingController extends Controller
                 'status' => $_GET['status'] ?? '',
                 'search' => $_GET['search'] ?? ''
             ];
+            $sort = $_GET['sort'] ?? 'created_at';
+            $order = $_GET['order'] ?? 'desc';
 
-            $result = $this->book->getProviderBookings($providerId, $filters, $page, $limit);
+            $result = $this->book->getProviderBookings($providerId, $filters, $page, $limit, $sort, $order);
 
             $availableModel = new Available();
             require_once __DIR__ . '/../Helpers/dateHelper.php';

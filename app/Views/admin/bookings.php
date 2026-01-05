@@ -28,12 +28,12 @@
         <table id="bookingsTable">
             <thead>
                 <tr>
-                    <th>Customer</th>
-                    <th>Service</th>
-                    <th>Date</th>
+                    <th data-sort="customer_name">Customer <i class="fa-solid fa-sort"></i></th>
+                    <th data-sort="service_name">Service <i class="fa-solid fa-sort"></i></th>
+                    <th data-sort="start_time">Date <i class="fa-solid fa-sort"></i></th>
                     <th>Time</th>
-                    <th>Duration</th>
-                    <th>Price</th>
+                    <th data-sort="duration">Duration <i class="fa-solid fa-sort"></i></th>
+                    <th data-sort="price">Price <i class="fa-solid fa-sort"></i></th>
                     <th>Status</th>
                     <th>Actions</th>
                 </tr>

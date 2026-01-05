@@ -21,6 +21,11 @@ const validateName = () => {
     showError(name, 'Name must be at most 100 characters');
     return false;
   }
+  const nameRegex = /^[A-Za-z ]+$/;
+  if(!nameRegex.test(name.value.trim())){
+    showError(name, 'Name must only contain letters');
+    return false;
+  }
   clearError(name);
   return true;
 };

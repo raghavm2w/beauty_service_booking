@@ -67,7 +67,7 @@ body {
         <h2>Page Not Found</h2>
         <p>The page you are looking for does not exist</p>
 
-        <a href="/user-home" class="home-btn">Go Home</a>
+        <a  href="javascript:history.back()" class="home-btn">Go Back</a>
     </div>
 </body>
 </html>
