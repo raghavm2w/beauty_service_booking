@@ -38,7 +38,7 @@
                 <form id="contactForm" class="contact-form">
                     <div class="form-group">
                         <label for="name">Full Name</label>
-                        <input type="text" id="name" name="name" placeholder="John Doe">
+                        <input type="text" id="name" name="name" placeholder="John ">
                         <span class="error-text" id="nameError"></span>
                     </div>
 

@@ -109,9 +109,20 @@ class AuthController extends Controller
                 $result['refresh_token'],
                 $refreshCookieRules
             );
-
+                log_event(
+        'auth',
+        'register',
+        'success in register user',
+        $userId
+        );
             success(201, "Registration successful", ["user_id" => $userId, "role" => $role]);
         } catch (\Exception $e) {
+             log_event(
+            'error',
+            'exception',
+            'register failed: ' . $e->getMessage(),
+             null
+        );
             error_log("Registration error: " . $e->getMessage());
             error(500, "Internal Server error: " . $e->getMessage());
         }
@@ -173,6 +184,7 @@ class AuthController extends Controller
                     $refreshData['token'],
                     $refreshCookieRules
                 );
+                    log_event('auth','log in','User logged in success',$user['id']);
                 success(200, "Login successful", ["user_id" => $user['id'], "role" => $role]);
             } else {
                 error(401, "Incorrect password");
@@ -180,6 +192,12 @@ class AuthController extends Controller
 
 
         } catch (\Exception $e) {
+             log_event(
+            'error',
+            'exception',
+            'login failed: ' . $e->getMessage(),
+            null
+        );
             error_log("login error: " . $e->getMessage());
             error(500, "Internal Server error: " . $e->getMessage());
         }
@@ -219,14 +237,27 @@ class AuthController extends Controller
                 'httponly' => true,
                 'samesite' => 'Strict'
             ]);
+             log_event(
+        'auth',
+        'log out',
+        'User logged out success',
+        $userId
+        );
 
             success(200, "Logged out successfully");
 
         } catch (\Exception $e) {
+             log_event(
+            'error',
+            'exception',
+            'logout failed: ' . $e->getMessage(),
+            $_REQUEST['auth_user']['id'] ?? null
+        );
             error_log("Logout error: " . $e->getMessage());
             error(500, "Logout failed");
         }
     }
+    //----setting timezone by provider according to their timezone slots timings are calculated
     function setTimezone()
     {
         try {
@@ -244,10 +275,23 @@ class AuthController extends Controller
             if (!$isUpdated) {
                 error(500, "failed to update timezone");
             }
+                log_event('success','timezone','User timezone updated',$provider_id);
             success(200, "timezone updated");
 
 
         } catch (\Exception $e) {
+            log_event(
+            'error',
+            'exception',
+            'Setting timezone failed: ' . $e->getMessage(),
+            $_REQUEST['auth_user']['id'] ?? null
+        );
+          log_event(
+            'error',
+            'exception',
+            'setting timezone failed: ' . $e->getMessage(),
+            null
+        );
             error_log("setting timezone error: " . $e->getMessage());
             error(500, "setting timezone failed");
         }
@@ -265,9 +309,16 @@ class AuthController extends Controller
             if (!$user) {
                 error(404, "User not found");
             }
+                 log_event('success','get_user','get user controller success',$userId);
 
             success(200, "User details fetched", $user);
         } catch (\Exception $e) {
+             log_event(
+            'error',
+            'exception',
+            'getting user by id failed: ' . $e->getMessage(),
+            $_REQUEST['auth_user']['id'] ?? null
+        );
             error_log("Get user error: " . $e->getMessage());
             error(500, "Internal Server Error");
         }
@@ -318,12 +369,25 @@ class AuthController extends Controller
             $success = $this->user->updateUser($userId, $updateData);
 
             if (!$success) {
+                 log_event(
+            'error',
+            'update profile',
+            'update profile query failed',
+            $_REQUEST['auth_user']['id'] ?? null
+        );
                 error(500, "Failed to update profile");
             }
+            log_event('success','update profile','User profile updated',$userId);
 
             success(200, "Profile updated successfully");
 
         } catch (\Exception $e) {
+             log_event(
+            'error',
+            'exception',
+            'updating proile failed: ' . $e->getMessage(),
+            $_REQUEST['auth_user']['id'] ?? null
+        );
             error_log("Update profile error: " . $e->getMessage());
             error(500, "Internal Server Error");
         }
