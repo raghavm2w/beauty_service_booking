@@ -16,7 +16,7 @@ class BookingController extends Controller
         $this->book = new Booking();
     }
 
-
+//----------- booking slots make status 0 and check for double booking and slot locking
     public function bookSlot()
     {
         try {
@@ -57,11 +57,17 @@ class BookingController extends Controller
             success(201, "Booking created successfully", ['booking_id' => $result['booking_id']]);
 
         } catch (\Exception $e) {
+              log_event(
+            'error',
+            'exception',
+            'booking slots failed: ' . $e->getMessage(),
+            null
+        );
             error_log("Booking error: " . $e->getMessage());
             error(500, "Internal Server Error in booking slots");
         }
     }
-
+//------------get booking details for payment
     public function getBookingDetails()
     {
         try {
@@ -87,7 +93,7 @@ class BookingController extends Controller
             error(500, "Internal Server Error");
         }
     }
-
+//-------------make the booking status 1 -confirmed
     public function confirmPayment()
     {
         try {
@@ -104,10 +110,17 @@ class BookingController extends Controller
 
             success(200, "Payment confirmed");
         } catch (\Exception $e) {
+              log_event(
+            'error',
+            'exception',
+            'payment failed: ' . $e->getMessage(),
+            null
+        );
             error_log("Payment error: " . $e->getMessage());
             error(500, "Internal Server Error");
         }
     }
+    //------cancel booking and make status to 3 -cancelled
     public function cancelBooking()
     {
         try {
@@ -128,7 +141,7 @@ class BookingController extends Controller
             error(500, "Internal Server Error");
         }
     }
-
+    //----used by provider to complete the booking status --2
     public function completeBooking()
     {
         try {
@@ -145,10 +158,17 @@ class BookingController extends Controller
 
             success(200, "Booking completed");
         } catch (\Exception $e) {
+              log_event(
+            'error',
+            'exception',
+            'booking completion failed: ' . $e->getMessage(),
+            null
+        );
             error_log("Complete error: " . $e->getMessage());
             error(500, "Internal Server Error");
         }
     }
+    //---fetch only customer bookings
     public function fetchUserBookings()
     {
         try {
@@ -186,7 +206,7 @@ class BookingController extends Controller
             error(500, "Internal Server Error");
         }
     }
-
+    //--fetch bookings for provider services
     public function fetchProviderBookings()
     {
         try {
@@ -220,7 +240,7 @@ class BookingController extends Controller
             error(500, "Internal Server Error");
         }
     }
-
+    //----fetch only current date bookings for dashboard
     public function getTodayBookings()
     {
         try {

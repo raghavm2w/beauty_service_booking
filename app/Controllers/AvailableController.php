@@ -11,6 +11,7 @@ class AvailableController extends Controller {
     {
         $this->avail = new Available();
     }
+    // ----adding default weekly availability for each week day
     public function addWeeklyAvailability(){
         try{
         $input = json_decode(file_get_contents("php://input"), true);
@@ -100,13 +101,22 @@ class AvailableController extends Controller {
         if(!$result){
             error(500,"An error occurred while saving availability");   
         }
+        log_event('success','add_weekly_availability','Weekly availability saved successfully',$provider_id);
+
         success(200,"Weekly availability saved successfully");
 
-    } catch(\Exception $e){
+     } catch(\Exception $e){
+          log_event(
+            'error',
+            'exception',
+            'setting default weekly failed: ' . $e->getMessage(),
+            null
+        );
             error_log("An error occurred: " . $e->getMessage());
             error(500, "Internal Server Error: ");
         }
     }
+    //------specific date updating availability
     public function updateSingleDayAvailability(){
         try{
         $input = json_decode(file_get_contents("php://input"), true);
@@ -189,13 +199,22 @@ class AvailableController extends Controller {
         if(!$result){
             error(500,"An error occurred while saving single day availability");   
         }
+        log_event('success','add_single_availability','single day availability saved successfully',$provider_id);
+
         success(200,"Single day availability saved successfully");
 
-    } catch(\Exception $e){
+        } catch(\Exception $e){
+          log_event(
+            'error',
+            'exception',
+            'single day avialability setting failed: ' . $e->getMessage(),
+            null
+        );
             error_log("An error occurred: " . $e->getMessage());
             error(500, "Internal Server Error: ");
         }
     }
+    //------get availability for provider to show in calender --it checks for overrides
     public function getAvailability(){
         try{
             $provider_id = $_REQUEST['auth_user']['id'];
@@ -238,10 +257,17 @@ class AvailableController extends Controller {
         }
             success(200, "Availability fetched successfully", $availability);
         } catch(\Exception $e){
+              log_event(
+            'error',
+            'exception',
+            'fetching availibilty failed: ' . $e->getMessage(),
+            null
+        );
             error_log("An error occurred: " . $e->getMessage());
             error(500, "Internal Server Error in fetching availability ");
         }
     }
+    //------ set provider day off for specific date
     public function setDayOff(){
         try{
         $input = json_decode(file_get_contents("php://input"), true);
@@ -280,9 +306,17 @@ class AvailableController extends Controller {
         if(!$result){
             error(500,"An error occurred while marking day off");   
         }
+            log_event('success','day_mark_off','Day marked off successfully',$provider_id);
+
         success(200,"Day marked off successfully");
 
-    } catch(\Exception $e){
+        } catch(\Exception $e){
+          log_event(
+            'error',
+            'exception',
+            'setting day off failed: ' . $e->getMessage(),
+            null
+        );
             error_log("An error occurred: " . $e->getMessage());
             error(500, "Internal Server Error: ");
                 }
@@ -293,19 +327,18 @@ class AvailableController extends Controller {
                 error(400,"provider_id is required");
              }
 
-    $providerId = (int) $_GET['provider_id'];
+        $providerId = (int) $_GET['provider_id'];
+        $data = $this->avail->getRecurringAvailability($providerId);
 
-
-  $data = $this->avail->getRecurringAvailability($providerId);
-
-   success(200,"weekly data fetched successfully",$data);
+        success(200,"weekly data fetched successfully",$data);
 
         }catch(\Exception $e){
             error_log("An error occurred while fetching weekly availability: " . $e->getMessage());
             error(500, "Internal Server Error while fetching availablity weekly ");
             }
     }
-public function fetchSlots(){
+    //-------fetching slots for user by calculating slots timings from service duration and availability range
+    public function fetchSlots(){
     try{
         if (
         empty($_GET['provider_id']) ||
@@ -385,7 +418,7 @@ public function fetchSlots(){
         
         $bookedIntervals[] = ['start' => $bStartM, 'end' => $bEndM];
     }
-//slot calculation
+    //slot calculation
     while (($current + $duration) <= $endMinutes) {
         $slotStart = $current;
         $slotEnd   = $current + $duration;
@@ -418,6 +451,12 @@ public function fetchSlots(){
     success(200, "Slots fetched successfully", $slots);
 
     }catch(\Exception $e){
+          log_event(
+            'error',
+            'exception',
+            'slots fetched failed: ' . $e->getMessage(),
+            null
+        );
             error_log("An error occurred while fetching slots: " . $e->getMessage());
             error(500, "Internal Server Error while fetching slots ");
             }

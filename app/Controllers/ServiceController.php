@@ -12,11 +12,11 @@ class ServiceController extends Controller {
     {
         $this->service = new Service();
     }
-     
-public function addService(){
-    try{
-    $input = json_decode(file_get_contents("php://input"), true);
-      $required = ['name', 'category_id', 'subcategory_id', 'price', 'duration'];
+   //----adding service by provider  
+    public function addService(){
+        try{
+        $input = json_decode(file_get_contents("php://input"), true);
+         $required = ['name', 'category_id', 'subcategory_id', 'price', 'duration'];
         foreach ($required as $field) {
             if (!isset($input[$field])) {
                 error(400, "$field is required");
@@ -51,7 +51,7 @@ public function addService(){
         if (strlen($description) > 1500) {
             error(400, "Description must not exceed 1500 characters");
         }
-    }
+        }
         // Category integrity check
         if (!$this->service->isValidCategoryPair($category_id, $subcategory_id)) {
             error(400, "Invalid category or subcategory");
@@ -66,31 +66,50 @@ public function addService(){
         }
         success(201,"Service added successfully");
 
- }catch(\Exception $e){
+        }catch(\Exception $e){
+              log_event(
+            'error',
+            'exception',
+            'adding service failed: ' . $e->getMessage(),
+            null
+        );
         error_log("service add error".$e->getMessage());
         error(500,"An error occurred while adding services");
-}
-}
+        }
+    }
 
-public function fetchCategories(){
-    try{
-    $categories = $this->service->getCategories();
-    success(200,"Categories fetched successfully", $categories);
-    }catch(\Exception $e){
+    public function fetchCategories(){
+        try{
+        $categories = $this->service->getCategories();
+        success(200,"Categories fetched successfully", $categories);
+        }catch(\Exception $e){
+              log_event(
+            'error',
+            'exception',
+            'fetching categories failed: ' . $e->getMessage(),
+            null
+        );
         error(500,"An error occurred while fetching categories");
-}
-}
-public function fetchSubcategories(){
-    try{
-    $id =$_GET['id'] ?? null;
-    $subcategories = $this->service->getSubcategories($id);
-    success(200,"sub-Categories fetched successfully", $subcategories);
-    }catch(\Exception $e){
+        }
+    }
+    public function fetchSubcategories(){
+        try{
+        $id =$_GET['id'] ?? null;
+        $subcategories = $this->service->getSubcategories($id);
+        success(200,"sub-Categories fetched successfully", $subcategories);
+        }catch(\Exception $e){
+              log_event(
+            'error',
+            'exception',
+            'fetching subcategories failed: ' . $e->getMessage(),
+            null
+        );
         error(500,"An error occurred while fetching subcategories");
-}
-}
-public function fetchServices(){
-    try{
+        }
+    }
+    //fetch services for provider
+    public function fetchServices(){
+        try{
         $search = trim($_GET['search'] ?? '');
         $page   = max(1, (int)($_GET['page'] ?? 1));
         $limit  = max(1, (int)($_GET['limit'] ?? 4));
@@ -109,28 +128,35 @@ public function fetchServices(){
             'overallTotal'=>$overallTotal,
             'activeTotal'=>$activeTotal
         ]);
-    }
-    catch(\Exception $e){
-    error_log("Fetch services error: ".$e->getMessage());
+        }
+        catch(\Exception $e){
+              log_event(
+            'error',
+            'exception',
+            'fetching services for provider failed: ' . $e->getMessage(),
+            null
+        );
+        error_log("Fetch services error: ".$e->getMessage());
         error(500,"An error occurred while fetching services");
-    }
+        }
 }
-public function editService(){
-    try{
-    $input = json_decode(file_get_contents("php://input"), true);
-     $required = ['id','name', 'category_id', 'subcategory_id', 'price', 'duration','service_status'];
+//---edit service failed
+    public function editService(){
+        try{
+         $input = json_decode(file_get_contents("php://input"), true);
+        $required = ['id','name', 'category_id', 'subcategory_id', 'price', 'duration','service_status'];
         foreach ($required as $field) {
             if (!isset($input[$field]) || $input[$field] === '') {
                 error(400, "$field is required");
             }
         }
-    $provider_id = $_REQUEST['auth_user']['id'];
-    $name = trim($input['name']);
-    $description = trim($input['description'] ?? null);
+        $provider_id = $_REQUEST['auth_user']['id'];
+        $name = trim($input['name']);
+        $description = trim($input['description'] ?? null);
    
-    $service_status = (int) $input['service_status'];
-    $service_id = filter_var($input['id'], FILTER_VALIDATE_INT);
-     $category_id = filter_var($input['category_id'], FILTER_VALIDATE_INT);
+         $service_status = (int) $input['service_status'];
+         $service_id = filter_var($input['id'], FILTER_VALIDATE_INT);
+         $category_id = filter_var($input['category_id'], FILTER_VALIDATE_INT);
         $subcategory_id = filter_var($input['subcategory_id'], FILTER_VALIDATE_INT);
         $price = filter_var($input['price'], FILTER_VALIDATE_FLOAT);
         $duration = filter_var($input['duration'], FILTER_VALIDATE_INT);
@@ -169,31 +195,45 @@ public function editService(){
             error(500,"An error occurred while updating the service");
         }
         success(200,"Service updated successfully");
-    }catch(\Exception $e){
+        }catch(\Exception $e){
+          log_event(
+            'error',
+            'exception',
+            'edit service failed: ' . $e->getMessage(),
+            null
+        );
         error_log("Edit service error: ".$e->getMessage());
         error(500,"An error occurred while updating the service");
-    }
+        }
 }
-function deleteService(){
-    try{
-    $input = json_decode(file_get_contents("php://input"), true);
-  if (empty($input['id']) )
+//----delete service by provider
+    public function deleteService(){
+        try{
+        $input = json_decode(file_get_contents("php://input"), true);
+        if (empty($input['id']) )
         {
             error(400,"Service ID is required");
         }
-    $service_id = (int) $input['id'];
-    $provider_id = $_REQUEST['auth_user']['id'];
+        $service_id = (int) $input['id'];
+        $provider_id = $_REQUEST['auth_user']['id'];
         $result = $this->service->deleteService($service_id,$provider_id);
         if(!$result){
             error(500,"An error occurred while deleting the service");
         }
         success(200,"Service deleted successfully");
-    }catch(\Exception $e){
+        }catch(\Exception $e){
+          log_event(
+            'error',
+            'exception',
+            'delete service failed: ' . $e->getMessage(),
+            null
+        );
         error_log("Delete service error: ".$e->getMessage());
         error(500,"An error occurred while deleting the service");
-    }
+        }
 }
-public function fetchAllServices(){
+//---fetch services for customers
+    public function fetchAllServices(){
     try{
           $categoryId     = $_GET['category_id'] ?? null;
         $subcategoryId  = $_GET['subcategory_id'] ?? null;
@@ -229,13 +269,20 @@ public function fetchAllServices(){
 
     }
      catch(\Exception $e){
+          log_event(
+            'error',
+            'exception',
+            'fetch services for customer failed: ' . $e->getMessage(),
+            null
+        );
         error_log("fetching all services error: ".$e->getMessage());
         error(500,"An error occurred while fetching all services");
     }
-}
-public function serviceSuggestions()
-{
-    try {
+    }
+//service suggestions for search
+    public function serviceSuggestions()
+    {
+        try {
         $query = trim($_GET['q'] ?? '');
         if (strlen($query) < 2) {
           success(200,"success",[]);
@@ -243,9 +290,15 @@ public function serviceSuggestions()
           $limit = 6; 
           $suggestions = $this->service->fetchSuggestions($limit,$query);
           success(200,"suggestions fetched successfully",$suggestions);
-    }catch(\Exception $e){
+        }catch(\Exception $e){
+          log_event(
+            'error',
+            'exception',
+            'service suggestions failed: ' . $e->getMessage(),
+            null
+        );
         error_log("fetching all services suggestions error: ".$e->getMessage());
         error(500,"An error occurred while fetching service suggestions");
+        }
     }
-}
 }
