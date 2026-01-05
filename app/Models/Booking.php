@@ -177,7 +177,7 @@ class Booking extends Model
         }
     }
 
-    public function getProviderBookings(int $providerId, array $filters, int $page, int $limit)
+    public function getProviderBookings(int $providerId, array $filters, int $page, int $limit, string $sort = 'created_at', string $order = 'DESC')
     {
         try {
             $offset = ($page - 1) * $limit;
@@ -215,6 +215,19 @@ class Booking extends Model
             $stmt->execute($params);
             $total = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
 
+            // Validate sort column
+            $allowedSortColumns = [
+                'customer_name' => 'u.name',
+                'service_name' => 's.name',
+                'start_time' => 'b.start_time',
+                'duration' => 's.duration',
+                'price' => 's.price',
+                'created_at' => 'b.created_at'
+            ];
+            
+            $sortColumn = $allowedSortColumns[$sort] ?? 'b.created_at';
+            $order = strtoupper($order) === 'ASC' ? 'ASC' : 'DESC';
+
             // Get Bookings
             $sql = "
                 SELECT 
@@ -225,7 +238,7 @@ class Booking extends Model
                 JOIN users u ON b.user_id = u.id
                 JOIN services s ON b.service_id = s.id
                 $whereClause
-                ORDER BY b.created_at DESC
+                ORDER BY $sortColumn $order
                 LIMIT :limit OFFSET :offset
             ";
 

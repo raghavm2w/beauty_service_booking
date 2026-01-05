@@ -120,7 +120,10 @@ const calendar = new FullCalendar.Calendar(
 
 calendar.render();
 
-
+function refreshCalendar() {
+  calendar.removeAllEvents();
+  calendar.addEventSource(buildEvents());
+}
 let selectedDay = null;
 let selectedDate = null;
 function openModal(day, date) {
@@ -191,10 +194,7 @@ async function setDayOff(dayOfWeek, date) {
     showAlert("Could not set day off", "error");
   }
 }
-function refreshCalendar() {
-  calendar.removeAllEvents();
-  calendar.addEventSource(buildEvents());
-}
+
 document.getElementById("applyAll").onclick = () => {
   const start = defaultStart.value;
   const end = defaultEnd.value;

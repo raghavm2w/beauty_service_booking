@@ -6,7 +6,7 @@ use PDO;
 class Available extends Model{
     public function setWeeklyAvailability($provider_id, $avail){
         try{
-     $stmt = $this->db->prepare("   INSERT INTO provider_availability (
+            $stmt = $this->db->prepare("   INSERT INTO provider_availability (
             provider_id,
             day_of_week,
              start_time,
@@ -23,53 +23,53 @@ class Available extends Model{
             (?, 4, ?, ?, 1, NULL, 1), -- Thursday
              (?, 5, ?, ?, 1, NULL, 1), -- Friday
              (?, 6, ?, ?, 1, NULL, 1)  -- Saturday
-ON DUPLICATE KEY UPDATE
-  start_time = VALUES(start_time),
-  end_time   = VALUES(end_time),
-  status     = 1,
-  is_recurring = 1,
-  change_date  = NULL;");
- return $stmt->execute([
-  $provider_id,$avail['start_time'],$avail['end_time'],
-  $provider_id,$avail['start_time'],$avail['end_time'],
-  $provider_id,$avail['start_time'],$avail['end_time'],
-  $provider_id,$avail['start_time'],$avail['end_time'],
-  $provider_id,$avail['start_time'],$avail['end_time'],
-  $provider_id,$avail['start_time'],$avail['end_time'],
-  $provider_id,$avail['start_time'],$avail['end_time']
-]);
- }catch(\Exception $e){
+            ON DUPLICATE KEY UPDATE
+            start_time = VALUES(start_time),
+            end_time   = VALUES(end_time),
+            status     = 1,
+            is_recurring = 1,
+            change_date  = NULL;");
+            return $stmt->execute([
+            $provider_id,$avail['start_time'],$avail['end_time'],
+            $provider_id,$avail['start_time'],$avail['end_time'],
+            $provider_id,$avail['start_time'],$avail['end_time'],
+            $provider_id,$avail['start_time'],$avail['end_time'],
+            $provider_id,$avail['start_time'],$avail['end_time'],
+            $provider_id,$avail['start_time'],$avail['end_time'],
+            $provider_id,$avail['start_time'],$avail['end_time']
+            ]);
+        }catch(\Exception $e){
         throw $e;
     }
     }
     public function setSingleDayAvailability($provider_id, $startTime, $endTime, $date){
         try{
-       $stmt = $this->db->prepare("
-            INSERT INTO provider_availability (
-                provider_id,
-                change_date,
-                start_time,
-                end_time,
-                is_recurring,
-                status
-            ) VALUES (
-                ?, ?, ?, ?, 0, 1
-            )
-            ON DUPLICATE KEY UPDATE
-                start_time = VALUES(start_time),
-                end_time   = VALUES(end_time),
-                status     = 1
-        ");
+            $stmt = $this->db->prepare("
+                    INSERT INTO provider_availability (
+                        provider_id,
+                        change_date,
+                        start_time,
+                        end_time,
+                        is_recurring,
+                        status
+                    ) VALUES (
+                        ?, ?, ?, ?, 0, 1
+                    )
+                    ON DUPLICATE KEY UPDATE
+                        start_time = VALUES(start_time),
+                        end_time   = VALUES(end_time),
+                        status     = 1
+                ");
 
-        return $stmt->execute([
-            $provider_id,
-            $date,
-            $startTime,
-            $endTime
-        ]);
+                return $stmt->execute([
+                    $provider_id,
+                    $date,
+                    $startTime,
+                    $endTime
+                ]);
          }catch(\Exception $e){
         throw $e;
-    }
+        }
     }
     public function getProviderAvailability($provider_id, $monday, $sunday){
         try{

@@ -8,13 +8,13 @@ class Router
 
     public function get(string $path, callable|array $handler): void
     {
-$this->routes['GET'][$this->normalizePath($path)] = $handler;
-   }
+        $this->routes['GET'][$this->normalizePath($path)] = $handler;
+    }
 
     public function post(string $path, callable|array $handler): void
     {
-$this->routes['POST'][$this->normalizePath($path)] = $handler;
- }
+        $this->routes['POST'][$this->normalizePath($path)] = $handler;
+    }
 
     public function dispatch(): void
     {
