@@ -206,21 +206,19 @@ class AuthController extends Controller
     public function logout()
     {
         try {
-            if (empty($_COOKIE['access_token'])) {
-                error(401, "Not logged in or cookie missing");
+        $userId = null;
+
+        if (!empty($_COOKIE['refresh_token'])) {
+            try {
+                $decodedRefresh = JWT::verifyJwt($_COOKIE['refresh_token']);
+                if (!empty($decodedRefresh->sub)) {
+                    $userId = $decodedRefresh->sub;
+                    $this->user->deleteRefreshToken($userId);
+                }
+            } catch (\Exception $e) {
+
             }
-
-            $accessToken = $_COOKIE['access_token'];
-
-            $decoded = JWT::verifyJwt($accessToken);
-
-            if (!$decoded || empty($decoded->sub)) {
-                error(401, "Invalid token");
-            }
-
-            $userId = $decoded->sub;
-            $this->user->deleteRefreshToken($userId);
-
+        }
 
             setcookie("access_token", "", [
                 'expires' => time() - 3600,
@@ -241,8 +239,7 @@ class AuthController extends Controller
         'auth',
         'log out',
         'User logged out success',
-        $userId
-        );
+        $userId);
 
             success(200, "Logged out successfully");
 
@@ -251,14 +248,14 @@ class AuthController extends Controller
             'error',
             'exception',
             'logout failed: ' . $e->getMessage(),
-            $_REQUEST['auth_user']['id'] ?? null
-        );
+             null);
             error_log("Logout error: " . $e->getMessage());
-            error(500, "Logout failed");
+            success(200, "Logged out successfully");
         }
     }
+    
     //----setting timezone by provider according to their timezone slots timings are calculated
-    function setTimezone()
+    public function setTimezone()
     {
         try {
             $input = json_decode(file_get_contents("php://input"), true);
