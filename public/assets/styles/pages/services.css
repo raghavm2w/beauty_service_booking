@@ -178,7 +178,18 @@ td small {
         transform: translateY(0);
     }
 }
+.table-desc {
+  max-width: 280px;        
+  white-space: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
+  display: -webkit-box;
+  -webkit-line-clamp: 2;   /* 2 lines only */
+  -webkit-box-orient: vertical;
+
+  word-break: break-word; /* VERY IMPORTANT */
+}
 .service-form {
     display: flex;
     width: 100%;

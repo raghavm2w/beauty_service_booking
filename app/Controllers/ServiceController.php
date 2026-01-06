@@ -48,8 +48,8 @@ class ServiceController extends Controller {
             error(400, "Duration must be valid number between 5 and 1440 minutes");
         }
         if($description){
-        if (strlen($description) > 1500) {
-            error(400, "Description must not exceed 1500 characters");
+        if (strlen($description) > 150) {
+            error(400, "Description must not exceed 150 characters");
         }
         }
         // Category integrity check
@@ -182,8 +182,8 @@ class ServiceController extends Controller {
         }
         
         if ($description) {
-            if (strlen($description) > 1500) {
-                error(400, "Description must not exceed 1500 characters");
+            if (strlen($description) > 150) {
+                error(400, "Description must not exceed 150 characters");
             }
         }
         // Category integrity check

@@ -31,8 +31,8 @@ class AuthController extends Controller
             $gender = strtolower($input['gender']);
             $role = strtolower(trim($input['role']));
             $phone = $input['phone'];
-            if (strlen($name) < 3 || strlen($name) > 100) {
-                error(400, "Name must be between 3 to 100 characters long.");
+            if (strlen($name) < 3 || strlen($name) > 50) {
+                error(400, "Name must be between 3 to 50 characters long.");
             }
             if (!preg_match("/^[A-Za-z ]+$/", $name)) {
                 error(400, "Username can contain only letters.");
@@ -40,7 +40,7 @@ class AuthController extends Controller
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 error(400, "Invalid email format.");
             }
-            if (strlen($email) > 100) {
+            if (strlen($email) > 60) {
                 error(400, "Email is too long.");
             }
             if (strlen($password) < 6) {

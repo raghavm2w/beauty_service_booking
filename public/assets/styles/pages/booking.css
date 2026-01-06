@@ -45,6 +45,8 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 10px;
+  max-height: 400px;
+  overflow-y: auto;
 }
 
 .slot-btn {

@@ -42,6 +42,10 @@
 .auth-link {
   margin-top: 10px;
 }
+.auth-link a{
+  text-decoration: none;
+  color:rgb(89, 89, 245);
+}
 
 .error {
   color: #dc2626;

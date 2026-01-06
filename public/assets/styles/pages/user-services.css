@@ -29,7 +29,13 @@
     padding: 10px;
 
 }
-
+.service-description {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;   /* show only 2 lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .services-search input {
     flex: 1;
     border: none;

@@ -11,7 +11,7 @@ class AuthMiddleware
     {
         if (empty($_COOKIE['access_token'])) {
             if (!empty($_COOKIE['refresh_token'])) {
-                self::refreshAccessToken(null); // Try to refresh using refresh token
+            self::refreshAccessToken(null); // Try to refresh using refresh token
                 return;
             }
             error_log("cookie not found");

@@ -17,8 +17,8 @@ const validateName = () => {
     showError(name, 'Name must be at least 3 characters');
     return false;
   }
-  if (name.value.trim().length > 100) {
-    showError(name, 'Name must be at most 100 characters');
+  if (name.value.trim().length > 50) {
+    showError(name, 'Name must be at most 50 characters');
     return false;
   }
   const nameRegex = /^[A-Za-z ]+$/;

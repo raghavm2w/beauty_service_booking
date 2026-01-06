@@ -178,7 +178,7 @@ function renderServices(services) {
                 <span>⏱ ${service.duration} min</span>
                 <span><i class="fa-solid fa-indian-rupee-sign"></i> ${service.price}</span>
             </div>
-            <p class="desc">${service.description}</p>
+            <p class="desc service-description"> ${service.description ? service.description : ""}</p>
 
             <p class="provider">by ${service.provider_name}</p>
             <button id="bookBtn" onclick="openBookNow(this)"  data-service-id="${service.id}"
@@ -188,19 +188,8 @@ function renderServices(services) {
         grid.appendChild(card);
     });
 }
-// const servicesScroll = document.getElementById("servicesScroll");
 
-// servicesScroll.addEventListener("scroll", () => {
-//     const scrollTop = servicesScroll.scrollTop;
-//     const scrollHeight = servicesScroll.scrollHeight;
-//     const clientHeight = servicesScroll.clientHeight;
-
-//     if (scrollTop + clientHeight >= scrollHeight - 200) {
-//         fetchServices();
-//     }
-// });
 function handleInfiniteScroll() {
-    console.log("scroll");
     const scrollPosition = window.innerHeight + window.scrollY;
     const threshold = document.body.offsetHeight - 300;
 

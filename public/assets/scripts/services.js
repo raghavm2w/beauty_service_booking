@@ -28,7 +28,6 @@ function fetchServices() {
             totalCountElem.textContent = data.data.overallTotal;
             activeCountElem.textContent = data.data.activeTotal;
             totalRows = data.data.totalRows;
-            console.log(data.data.services);
             renderTable(data.data.services);
         })
         .catch(err => {
@@ -45,10 +44,12 @@ function renderTable(services) {
             <tr>
                 <td colspan="6" style="text-align:center">No services found</td>
             </tr>`;
-        return;
-    }
+            paginationInfo.textContent = 'Showing 0-0 of 0 services';
+            prevBtn.disabled = true;
+            nextBtn.disabled = true;
+            return; 
+           }
     services.forEach(service => {
-        console.log(service);
         tableBody.innerHTML += `
             <tr>
                 <td>${service.name}</td>
@@ -56,7 +57,7 @@ function renderTable(services) {
                 <td>${service.duration} min</td>
                 <td>${service.category_name || "-"}</td>
                 <td>${service.subcategory_name || "-"}</td>
-                <td>${service.description ? service.description : "-"}</td>
+                <td>  <div class="table-desc">${service.description ? service.description : "-"}  </div></td>
                 <td>
                     <span class="badge ${service.service_status === 1 ? 'active' : 'inactive'}">
                         ${service.service_status === 1 ? 'active' : 'inactive'}
@@ -73,12 +74,11 @@ function renderTable(services) {
     });
     const start = (currentPage - 1) * limit + 1;
     const end = Math.min(currentPage * limit, totalRows);
-
     paginationInfo.textContent = `Showing ${start}-${end} of ${totalRows} services`;
 
     prevBtn.disabled = currentPage === 1;
     nextBtn.disabled = currentPage * limit >= totalRows;
-
+    
 }
 
 
@@ -180,7 +180,7 @@ document.addEventListener('submit', (e) => {
         return;
     }
     if (isNaN(serviceData.price) || serviceData.price <= 0) {
-        showAlert("Please enter a valid price", "error");
+        showAlert("Please enter a valid price value greater than 0", "error");
         return;
     }
     if (isNaN(serviceData.duration) || serviceData.duration < 5) {
@@ -239,7 +239,7 @@ document.getElementById('editServiceForm').addEventListener('submit', (e) => {
         return;
     }
     if (isNaN(serviceData.price) || serviceData.price <= 0) {
-        showAlert("Please enter a valid price", "error");
+        showAlert("Please enter a valid price value ", "error");
         return;
     }
     if (isNaN(serviceData.duration) || serviceData.duration < 5) {
